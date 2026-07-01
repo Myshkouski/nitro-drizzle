@@ -1,0 +1,103 @@
+{
+  "name": "nitro-drizzle",
+  "version": "0.1.0",
+  "description": "Nitro module to integrate Drizzle ORM with ease.",
+  "homepage": "https://github.com/Myshkouski/nitro-drizzle#readme",
+  "bugs": {
+    "url": "https://github.com/Myshkouski/nitro-drizzle/issues"
+  },
+  "license": "MIT",
+  "author": "Alexei Myshkouski <alexeimyshkouski@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Myshkouski/nitro-drizzle.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    "./shared": "./dist/shared.mjs",
+    "./migrations": "./dist/migrations.mjs",
+    "./migrations/task": "./dist/migrations/task.mjs",
+    "./config": "./dist/config.mjs",
+    "./context": "./dist/context.mjs",
+    "./dialects": "./dist/dialects/index.mjs",
+    "./dialects/*": "./dist/dialects/*.mjs",
+    "./drivers": "./dist/drivers/index.mjs",
+    "./drivers/*": "./dist/drivers/*.mjs",
+    "./meta": "./dist/meta.mjs",
+    "./module": "./dist/module.mjs",
+    "./plugins/*": "./dist/plugins/*.mjs",
+    "./runtime": "./dist/runtime.mjs",
+    "./utils": "./dist/utils.mjs",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "build:dev": "tsdown --watch",
+    "fmt": "oxfmt",
+    "lint": "oxlint",
+    "playground": "nitro dev playground",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "release": "changelogen"
+  },
+  "dependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@typescript/native-preview": "7.0.0-dev.20260606.1",
+    "consola": "^3.4.2",
+    "db0": "^0.3.4",
+    "defu": "^6.1.7",
+    "drizzle-kit": "^0.31.10",
+    "drizzle-orm": "catalog:",
+    "exsolve": "^1.0.8",
+    "h3": "catalog:",
+    "jiti": "^2.7.0",
+    "knitwork": "^1.3.0",
+    "nitropack": "catalog:",
+    "ohash": "^2.0.11",
+    "pathe": "^2.0.3",
+    "rollup": "^4.62.0",
+    "strip-indent": "^4.1.1",
+    "tinyglobby": "^0.2.17",
+    "unstorage": "^1.17.5"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260624.1",
+    "@types/node": "^25.6.2",
+    "changelogen": "^0.6.0",
+    "oxfmt": "^0.57.0",
+    "oxlint": "^1.71.0",
+    "oxlint-tsgolint": "^0.23.0",
+    "tsdown": "^0.22.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.5"
+  },
+  "peerDependencies": {
+    "@cloudflare/workers-types": "catalog:drivers",
+    "@electric-sql/pglite": "catalog:drivers",
+    "better-sqlite3": "catalog:drivers",
+    "h3": "^1.15.5",
+    "mysql2": "catalog:drivers",
+    "postgres": "catalog:drivers"
+  },
+  "peerDependenciesMeta": {
+    "@cloudflare/workers-types": {
+      "optional": true
+    },
+    "@electric-sql/pglite": {
+      "optional": true
+    },
+    "better-sqlite3": {
+      "optional": true
+    },
+    "mysql2": {
+      "optional": true
+    },
+    "postgres": {
+      "optional": true
+    }
+  },
+  "packageManager": "pnpm@10.34.3+sha512.f2c531b08829d7be7f03c90addc266615f9c5477463e4bf1d275cb263ce9ea57cf0d5599110d94649a9bb3fed9f0b5efcea74a7016b61532a24cb9ad87860c1d"
+}

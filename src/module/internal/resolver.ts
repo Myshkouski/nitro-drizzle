@@ -1,0 +1,31 @@
+import { createJiti, type Jiti, type JitiOptions } from "jiti";
+import type { Resolver } from "nitro-drizzle/context";
+import { fileURLToPath } from "url";
+
+export function createResolver(id: string, options?: { alias?: Record<string, string> }): Resolver {
+  return new JitiResolver(id, {
+    alias: options?.alias,
+  });
+}
+
+class JitiResolver implements Resolver {
+  readonly #jiti: Jiti;
+
+  constructor(id: string, options?: JitiOptions) {
+    this.#jiti = createJiti(id, options);
+  }
+
+  resolve(id: string): string {
+    return fileURLToPath(this.#jiti.esmResolve(id));
+  }
+
+  tryResolve(id: string): string | undefined {
+    try {
+      return this.resolve(id);
+    } catch {}
+  }
+
+  async import<T>(id: string, options?: { default: boolean }): Promise<T> {
+    return await this.#jiti.import<T>(id, { default: options?.default || undefined });
+  }
+}
