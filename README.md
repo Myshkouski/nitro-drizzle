@@ -173,9 +173,9 @@ npx nitro task drizzle:migrate
 
 - **Purpose**: Retrieves a Drizzle ORM datasource instance by its configured name. Caches the datasource for reuse.
 - **Parameters**:
-    - `name`: The unique name of the datasource as defined in `nitro.config.ts`.
-    - `options` (optional):
-        - `autoClose`: `boolean` (default: `true`) - Whether to automatically close the datasource when the Nitro app closes.
+  - `name`: The unique name of the datasource as defined in `nitro.config.ts`.
+  - `options` (optional):
+    - `autoClose`: `boolean` (default: `true`) - Whether to automatically close the datasource when the Nitro app closes.
 - **Returns**: A `Promise` that resolves to the Drizzle ORM datasource instance, including `database` (the Drizzle client) and `schema` (your defined schema).
 
 ```ts
@@ -189,8 +189,8 @@ const result = await myDatasource.database.select().from(myDatasource.schema.myT
 
 - **Purpose**: Helper function to define Drizzle configuration files (`drizzle.config.ts`) that are compatible with both `nitro-drizzle/module` and `drizzle-kit`. It handles path resolution automatically.
 - **Parameters**:
-    - `config`: Your DrizzleKit configuration object.
-    - `filename`: Pass `import.meta.url` as the `filename` for correct relative path resolution.
+  - `config`: Your DrizzleKit configuration object.
+  - `filename`: Pass `import.meta.url` as the `filename` for correct relative path resolution.
 - **Returns**: A DrizzleKit compatible configuration object.
 
 ```ts
@@ -211,7 +211,7 @@ export default defineConfig(
 
 - **Purpose**: Runs Drizzle migrations for a specific datasource. This is typically used internally by the Nitro task, but can be called directly if needed.
 - **Parameters**:
-    - `name`: The name of the datasource to migrate.
+  - `name`: The name of the datasource to migrate.
 - **Returns**: A `Promise` that resolves to a `MigrationResult` object.
 
 ```ts
@@ -223,18 +223,25 @@ await migrate("myDatasourceName");
 ## ⚙️ Development
 
 - Install dependencies:
+
 ```bash
 pnpm install
 ```
+
 - Run the unit tests:
+
 ```bash
 pnpm test
 ```
+
 - Build the library:
+
 ```bash
 pnpm build
 ```
+
 - Run the playground in development mode:
+
 ```bash
 pnpm playground
 ```

@@ -1,9 +1,9 @@
 import { fileURLToPath, URL } from "node:url";
-import { name as pkgName } from "nitro-drizzle/package.json";
+import { name as pkgName } from "nitro-drizzle/package.json" with { type: "json" };
 
 export { pkgName };
 
 /** Directory path of the package. */
 export const pkgDir: string = fileURLToPath(
-   new URL(".", import.meta.resolve("nitro-drizzle/package.json")),
+  new URL(".", import.meta.resolve("nitro-drizzle/package.json")),
 );

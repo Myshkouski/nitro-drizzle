@@ -14,7 +14,19 @@ export function onConflictDoUpdate<TInsert extends MySqlInsertBase<any, any, any
   _: InferPrimaryColumns<InferTable<TInsert>>,
   insert: TInsert,
   options: OnConflictDoUpdateOptions<TInsert>,
-): TInsert | Omit<MySqlInsertBase<TInsert["_"]["table"], TInsert["_"]["queryResult"], TInsert["_"]["preparedQueryHKT"], TInsert["_"]["returning"], any, "$returning" | TInsert["_"]["excludedMethods"]>, "onDuplicateKeyUpdate" | TInsert["_"]["excludedMethods"]> {
+):
+  | TInsert
+  | Omit<
+      MySqlInsertBase<
+        TInsert["_"]["table"],
+        TInsert["_"]["queryResult"],
+        TInsert["_"]["preparedQueryHKT"],
+        TInsert["_"]["returning"],
+        any,
+        "$returning" | TInsert["_"]["excludedMethods"]
+      >,
+      "onDuplicateKeyUpdate" | TInsert["_"]["excludedMethods"]
+    > {
   return insert.onDuplicateKeyUpdate({
     set: options.set,
   });
@@ -31,7 +43,19 @@ export function onConflictDoUpdate<TInsert extends MySqlInsertBase<any, any, any
 export function onConflictDoNothing<TInsert extends MySqlInsertBase<any, any, any, any, any, any>>(
   target: InferPrimaryColumns<InferTable<TInsert>>,
   insert: TInsert,
-): TInsert | Omit<MySqlInsertBase<TInsert["_"]["table"], TInsert["_"]["queryResult"], TInsert["_"]["preparedQueryHKT"], TInsert["_"]["returning"], any, "$returning" | TInsert["_"]["excludedMethods"]>, "onDuplicateKeyUpdate" | TInsert["_"]["excludedMethods"]> {
+):
+  | TInsert
+  | Omit<
+      MySqlInsertBase<
+        TInsert["_"]["table"],
+        TInsert["_"]["queryResult"],
+        TInsert["_"]["preparedQueryHKT"],
+        TInsert["_"]["returning"],
+        any,
+        "$returning" | TInsert["_"]["excludedMethods"]
+      >,
+      "onDuplicateKeyUpdate" | TInsert["_"]["excludedMethods"]
+    > {
   const set = Object.fromEntries(
     Object.entries(target).map(([name, column]) => {
       return [name, sql`${column}`];
@@ -46,4 +70,4 @@ export function onConflictDoNothing<TInsert extends MySqlInsertBase<any, any, an
  * @template T - The insert type
  */
 export type InferMysqlTable<T extends MySqlInsertBase<any, any, any, any, any, any>> =
-   T extends MySqlInsertBase<infer TTable, any, any, any, any, any> ? TTable : never;
+  T extends MySqlInsertBase<infer TTable, any, any, any, any, any> ? TTable : never;

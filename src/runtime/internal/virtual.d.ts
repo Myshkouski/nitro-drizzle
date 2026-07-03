@@ -5,3 +5,5 @@ declare module "nitro-drizzle/runtime" {
     [name: string]: DatasourceProvider<any, any>;
   }
 }
+
+export {};

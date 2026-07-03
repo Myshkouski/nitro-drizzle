@@ -11,24 +11,24 @@ import { SELECT_1 } from "./internal/sql";
  * @returns A Datasource instance
  */
 export default defineDriver(async <TSchema extends Schema>(config: Options, schema: TSchema) => {
-   const connection = await createConnection(config.url);
-   const database = drizzle(connection, { schema, mode: "default" });
-   return {
-     database,
-     schema,
-     waitReady: async () => {
-       await database.execute(SELECT_1);
-     },
-     close: async () => {
-       await database.$client.end();
-     },
-   };
+  const connection = await createConnection(config.url);
+  const database = drizzle(connection, { schema, mode: "default" });
+  return {
+    database,
+    schema,
+    waitReady: async () => {
+      await database.execute(SELECT_1);
+    },
+    close: async () => {
+      await database.$client.end();
+    },
+  };
 });
 
 /**
  * Configuration options for the MySQL driver.
  */
 export type Options = {
-   /** Database connection URL. */
-   url: string;
+  /** Database connection URL. */
+  url: string;
 };

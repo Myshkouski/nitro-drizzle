@@ -1,13 +1,16 @@
 import type { Datasources } from ".";
 import { createDatasource } from "./internal/createDatasource";
 import { useNitroApp } from "nitropack/runtime";
+import { clearCachedConfig } from "./internal/config";
 
-const datasources: Partial<Datasources> = {};
+const datasources: {
+  [K in keyof Datasources & string]?: Promise<Datasources[K]>;
+} = {};
 
 /** Options for datasource creation and lifecycle management. */
 export type UseDatasourceOptions = Partial<{
-   /** Whether to automatically close the datasource when Nitro app closes. */
-   autoClose: boolean;
+  /** Whether to automatically close the datasource when Nitro app closes. */
+  autoClose: boolean;
 }>;
 
 /**
@@ -18,24 +21,33 @@ export type UseDatasourceOptions = Partial<{
  * @param options - Lifecycle options
  * @returns The datasource instance
  */
-export async function useDatasource<TName extends keyof Datasources>(
-   name: TName,
-   options: UseDatasourceOptions = {},
+export async function useDatasource<TName extends keyof Datasources & string>(
+  name: TName,
+  options: UseDatasourceOptions = {},
 ): Promise<Datasources[TName]> {
-   let datasource: Datasources[TName];
+  let datasourcePromise: Promise<Datasources[TName]>;
 
-   if (name in datasources) {
-     datasource = datasources[name];
-   } else {
-     datasource = datasources[name] = (await createDatasource(name)) as Datasources[TName];
-     const { autoClose = true } = options;
-     if (autoClose) {
-       const nitro = useNitroApp();
-       nitro.hooks.hookOnce("close", async () => {
-         await datasource.close();
-       });
-     }
-   }
+  if (name in datasources) {
+    datasourcePromise = datasources[name]!;
+  } else {
+    datasourcePromise = datasources[name] = createDatasource(name) as Datasources[TName];
+    const { autoClose = true } = options;
+    if (autoClose) {
+      const nitro = useNitroApp();
+      nitro.hooks.hookOnce("close", async () => {
+        const datasource = await datasourcePromise;
 
-   return datasource;
+        clearCachedConfig(name);
+        cleanCachedDatasource(name);
+
+        await datasource.close();
+      });
+    }
+  }
+
+  return await datasourcePromise;
+}
+
+function cleanCachedDatasource<TName extends keyof Datasources & string>(name: TName) {
+  delete datasources[name];
 }

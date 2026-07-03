@@ -1,13 +1,13 @@
 import { useDatasourceRegistry } from "#nitro-drizzle/runtime";
 import type { DatasourceProvider, DatasourceRegistry } from "..";
-import { useDatasourceConfig } from "./useDatasourceConfig";
+import { getCachedDatasourceConfig } from "./config";
 
 /**
  * @internal
  */
-export async function createDatasource(name: keyof DatasourceRegistry) {
+export async function createDatasource(name: keyof DatasourceRegistry & string) {
   const datasourceRegistry = useDatasourceRegistry();
   const datasourceProvider = datasourceRegistry[name] as DatasourceProvider<any, any>;
-  const datasourceConfig = await useDatasourceConfig(name);
+  const datasourceConfig = await getCachedDatasourceConfig(name);
   return await datasourceProvider.create(datasourceConfig);
 }

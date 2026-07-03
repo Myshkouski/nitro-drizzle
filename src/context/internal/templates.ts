@@ -41,23 +41,35 @@ function moduleDeclarations(datasources: DatasourceInfo[]) {
   ].join("\n");
 }
 
-export function typeDeclarations(datasources: DatasourceInfo[]): VirtualModules<`${string}.d.ts`> {
+export function augmentations(datasources: DatasourceInfo[]): VirtualModules<`${string}.d.ts`> {
   return {
-    "nitro-drizzle.d.ts": [
-      runtimeDeclarations(datasources), 
-      moduleDeclarations(datasources), 
-      dialectDeclarations(datasources),
+    "nitro-drizzle/augmentations.d.ts": [
+      runtimeDeclarations(datasources),
+      moduleDeclarations(datasources),
+      /* ts */ `export {};`,
     ].join("\n"),
   };
 }
 
 function dialectDeclarations(datasources: DatasourceInfo[]) {
-  return datasources.filter(d => d.enabled).map(({ name, dialect }) => {
-    return /*ts*/`
-      import "nitro-drizzle/dialects/${dialect}";
+  return datasources
+    .filter((d) => d.enabled)
+    .map(({ name, dialect }) => {
+      return /*ts*/ `
       declare module "#nitro-drizzle/dialects/${name}" {
         export * from "nitro-drizzle/dialects/${dialect}";
       }
-    `
-  }).join('\n')
+    `;
+    })
+    .join("\n");
+}
+
+export function declarations(
+  datasources: DatasourceInfo[],
+): Record<string, VirtualModules<`${string}.d.ts`>> {
+  return {
+    "#nitro-drizzle/*": {
+      "nitro-drizzle/declarations.d.ts": [dialectDeclarations(datasources)].join("\n"),
+    },
+  };
 }

@@ -1,11 +1,7 @@
-
 > nitro-drizzle@0.1.0 release /Users/myshkouski/Dev/myshkouski/nitro-drizzle
 > changelogen
 
-
-
 ## ...main
-
 
 ### 🚀 Enhancements
 
@@ -27,5 +23,3 @@
 ### ❤️ Contributors
 
 - Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
-
-

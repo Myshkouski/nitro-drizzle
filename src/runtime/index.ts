@@ -1,4 +1,4 @@
-import type { Datasource, DatasourceDriver, Schema } from "nitro-drizzle/drivers"
+import type { Datasource, DatasourceDriver, Schema } from "nitro-drizzle/drivers";
 
 /**
  * Provider interface for creating Drizzle datasource instances.
@@ -6,7 +6,7 @@ import type { Datasource, DatasourceDriver, Schema } from "nitro-drizzle/drivers
  * @template TDatasource - The datasource type that extends Datasource
  */
 export interface DatasourceProvider<TConfig, TDatasource extends Datasource<any, any>> {
-   create(config: TConfig): Promise<TDatasource> | TDatasource
+  create(config: TConfig): Promise<TDatasource> | TDatasource;
 }
 
 /**
@@ -14,19 +14,22 @@ export interface DatasourceProvider<TConfig, TDatasource extends Datasource<any,
  * @template TSchema - The schema type
  * @template TFactory - The driver factory type
  */
-export type ToDatasourceProvider<TSchema extends Schema, TFactory extends DatasourceDriver<any>> =
-  TFactory extends (config: infer TConfig, schema: TSchema) => (infer TDatasource extends Datasource<any, any>)
-    ? DatasourceProvider<TConfig, TDatasource>
-    : never
+export type ToDatasourceProvider<
+  TSchema extends Schema,
+  TFactory extends DatasourceDriver<any>,
+> = TFactory extends ((
+  config: infer TConfig,
+  schema: TSchema,
+) => infer TDatasource extends Datasource<any, any>)
+  ? DatasourceProvider<TConfig, TDatasource>
+  : never;
 
 /**
  * Extracts the Datasource type from a DatasourceProvider.
  * @template T - The DatasourceProvider type
  */
 export type ToDatasource<T extends DatasourceProvider<any, any>> =
-  T extends DatasourceProvider<any, infer TDatasource>
-    ? TDatasource
-    : never
+  T extends DatasourceProvider<any, infer TDatasource> ? TDatasource : never;
 
 /**
  * Factory function type for creating database instances.
@@ -34,7 +37,7 @@ export type ToDatasource<T extends DatasourceProvider<any, any>> =
  * @template TDatabase - The database type
  */
 export interface DatabaseFactory<TConfig = any, TDatabase = any> {
-  (config: TConfig): Promise<TDatabase> | TDatabase
+  (config: TConfig): Promise<TDatabase> | TDatabase;
 }
 
 /**
@@ -42,7 +45,7 @@ export interface DatabaseFactory<TConfig = any, TDatabase = any> {
  * This interface is augmented by the module to include all configured datasources.
  */
 export interface DatasourceRegistry {
-   // to be augmented
+  // to be augmented
 }
 
 /**
@@ -50,8 +53,8 @@ export interface DatasourceRegistry {
  * Provides access to datasource instances by name.
  */
 export type Datasources = {
-  readonly [K in keyof DatasourceRegistry]: ToDatasource<DatasourceRegistry[K]>
-}
+  readonly [K in keyof DatasourceRegistry]: ToDatasource<DatasourceRegistry[K]>;
+};
 
 /**
  * Recursively extracts primitive properties from a type.
@@ -66,58 +69,52 @@ export type PrimitiveProps<T> = {
         : never
       : T[K] extends Primitive
         ? T[K]
-        : never
-}
+        : never;
+};
 
 /**
  * Primitive types supported by the runtime configuration.
  */
-export type Primitive = string | number | boolean | null | undefined
+export type Primitive = string | number | boolean | null | undefined;
 
 /**
  * Extracts the configuration type from a DatasourceProvider.
  * @template T - The DatasourceProvider type
  */
 export type DatasourceProviderConfig<T extends DatasourceProvider<any, any>> =
-  T extends DatasourceProvider<infer TConfig, any> ? TConfig : never
+  T extends DatasourceProvider<infer TConfig, any> ? TConfig : never;
 
 /**
  * Configuration type mapping datasource names to their configurations.
  */
-export type DrizzleConfig = {
-  [K in keyof DatasourceRegistry]: DatasourceProviderConfig<DatasourceRegistry[K]>
-}
+export type Config = {
+  [K in keyof DatasourceRegistry]: DatasourceProviderConfig<DatasourceRegistry[K]>;
+};
 
 /**
  * Runtime configuration type with primitive values for each datasource.
  * Used for Nitro runtime config.
  */
-export type DrizzleRuntimeConfig = {
-  [K in keyof DrizzleConfig]: PrimitiveProps<DrizzleConfig[K]>
-}
-
-declare module "nitropack/core" {
-  interface NitroRuntimeConfigApp {
-    drizzle: DrizzleRuntimeConfig
-  }
-}
+export type RuntimeConfig = {
+  [K in keyof Config]: PrimitiveProps<Config[K]>;
+};
 
 declare module "nitropack/types" {
   interface NitroRuntimeConfig {
-    drizzle?: DrizzleRuntimeConfig
+    drizzle?: RuntimeConfig;
   }
 }
 
-type DrizzleConfigHookCallback = {
-  [K in keyof DrizzleConfig]: (config: DrizzleConfig[K]) => Promise<void> | void
+type ConfigHookArgs = {
+  [K in keyof Config]: [name: K, config: Config[K]];
+}[keyof Config];
+
+interface ConfigHooks {
+  "drizzle:config": (...args: ConfigHookArgs) => void | Promise<void>;
 }
 
-type DrizzleRuntimeHooks = {
-  [K in keyof DrizzleConfig as `drizzle:config:${K}`]: DrizzleConfigHookCallback[K];
+declare module "nitropack/types" {
+  interface NitroRuntimeHooks extends ConfigHooks {}
 }
 
-declare module 'nitropack/types' {
-  interface NitroRuntimeHooks extends DrizzleRuntimeHooks {}
-}
-
-export * from "./useDatasource"
+export * from "./useDatasource";

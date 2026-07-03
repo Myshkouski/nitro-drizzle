@@ -24,20 +24,18 @@ import { SELECT_1 } from "./internal/sql";
  * @param schema - The Drizzle schema
  * @returns A Datasource instance
  */
-const driver = defineDriver(
-  <TSchema extends Schema>(options: D1HttpOptions, schema: TSchema) => {
-    const { callback, batchCallback } = d1HttpDriver(options);
-    const database = drizzle(callback, batchCallback, { schema });
-    return {
-      database,
-      schema,
-      async waitReady() {
-        await database.run(SELECT_1);
-      },
-      async close() {},
-    };
-  },
-);
+const driver = defineDriver(<TSchema extends Schema>(options: D1HttpOptions, schema: TSchema) => {
+  const { callback, batchCallback } = d1HttpDriver(options);
+  const database = drizzle(callback, batchCallback, { schema });
+  return {
+    database,
+    schema,
+    async waitReady() {
+      await database.run(SELECT_1);
+    },
+    async close() {},
+  };
+});
 
 export default driver;
 

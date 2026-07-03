@@ -13,9 +13,9 @@ import type { Migration } from "./internal/migrate";
  * @returns Storage instance for migrations
  */
 export function useMigrationsStorage<TName extends keyof DatasourceRegistry>(
-   name: TName,
+  name: TName,
 ): Storage<string> {
-   return useStorage<string>(`assets:${MIGRATIONS_STORAGE_BASE}:${name}`);
+  return useStorage<string>(`assets:${MIGRATIONS_STORAGE_BASE}:${name}`);
 }
 
 /** Storage key for the migration journal. */
@@ -29,65 +29,65 @@ export const JOURNAL_STORAGE_KEY = "meta/_journal.json" as const;
  * @throws If migration journal is not found
  */
 export async function useMigrations<TName extends keyof DatasourceRegistry>(
-   name: TName,
+  name: TName,
 ): Promise<AsyncIterable<Migration>> {
-   const storage = useMigrationsStorage(name);
-   const journal = await storage.getItem<MigrationJournal>(JOURNAL_STORAGE_KEY);
-   if (!journal) {
-     throw createError({
-       fatal: true,
-       message: `Cannot find migration journal for '${name}'`,
-       data: {
-         datasource: name,
-       },
-     });
-   }
+  const storage = useMigrationsStorage(name);
+  const journal = await storage.getItem<MigrationJournal>(JOURNAL_STORAGE_KEY);
+  if (!journal) {
+    throw createError({
+      fatal: true,
+      message: `Cannot find migration journal for '${name}'`,
+      data: {
+        datasource: name,
+      },
+    });
+  }
 
-   return generate(journal, storage);
+  return generate(journal, storage);
 }
 
 const STATEMENT_BREAKPOINT = "--> statement-breakpoint" as const;
 
 async function* generate(journal: MigrationJournal, storage: Storage<string>) {
-   for (const { idx, when, tag, breakpoints } of journal.entries) {
-     const filename = tag + ".sql";
-     const query = await storage.getItem<string>(filename);
+  for (const { idx, when, tag, breakpoints } of journal.entries) {
+    const filename = tag + ".sql";
+    const query = await storage.getItem<string>(filename);
 
-     if (!query) {
-       throw createError({
-         fatal: true,
-         message: `Cannot find migration filename: ${filename}`,
-         data: {
-           filename,
-         },
-       });
-     }
+    if (!query) {
+      throw createError({
+        fatal: true,
+        message: `Cannot find migration filename: ${filename}`,
+        data: {
+          filename,
+        },
+      });
+    }
 
-     const migration: Migration = {
-       filename,
-       idx,
-       sql: query.split(STATEMENT_BREAKPOINT),
-       hash: digest(query),
-       folderMillis: when,
-       bps: breakpoints,
-     };
+    const migration: Migration = {
+      filename,
+      idx,
+      sql: query.split(STATEMENT_BREAKPOINT),
+      hash: digest(query),
+      folderMillis: when,
+      bps: breakpoints,
+    };
 
-     yield migration;
-   }
+    yield migration;
+  }
 }
 
 /** Single entry in the migration journal. */
 export interface MigrationJournalItem {
-   /** Migration index/order number. */
-   idx: number;
-   /** Migration version string. */
-   version: string;
-   /** Timestamp when migration was created. */
-   when: number;
-   /** Migration tag/identifier. */
-   tag: string;
-   /** Indicates if this entry has breakpoints. */
-   breakpoints: true;
+  /** Migration index/order number. */
+  idx: number;
+  /** Migration version string. */
+  version: string;
+  /** Timestamp when migration was created. */
+  when: number;
+  /** Migration tag/identifier. */
+  tag: string;
+  /** Indicates if this entry has breakpoints. */
+  breakpoints: true;
 }
 
 /**
@@ -95,6 +95,6 @@ export interface MigrationJournalItem {
  * @see https://github.com/drizzle-team/drizzle-orm/blob/48e5406027103a9fca6eb66417187c4a8b5c6aa3/drizzle-kit/src/utils.ts#L63
  */
 export interface MigrationJournal {
-   /** List of migration entries. */
-   entries: Iterable<MigrationJournalItem>;
+  /** List of migration entries. */
+  entries: Iterable<MigrationJournalItem>;
 }

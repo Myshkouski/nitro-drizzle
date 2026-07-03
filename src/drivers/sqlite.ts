@@ -11,27 +11,27 @@ import { SELECT_1 } from "./internal/sql";
  * @returns A Datasource instance
  */
 export default defineDriver(<TSchema extends Schema>(config: Options, schema: TSchema) => {
-   const { url, ...options } = config;
-   const sqlite = sqlite3(url, options);
-   const database = drizzle(sqlite, { schema });
-   return {
-     database,
-     schema,
-     async waitReady() {
-       if (!database.$client.open) {
-         database.run(SELECT_1);
-       }
-     },
-     async close() {
-       database.$client.close();
-     },
-   };
+  const { url, ...options } = config;
+  const sqlite = sqlite3(url, options);
+  const database = drizzle(sqlite, { schema });
+  return {
+    database,
+    schema,
+    async waitReady() {
+      if (!database.$client.open) {
+        database.run(SELECT_1);
+      }
+    },
+    async close() {
+      database.$client.close();
+    },
+  };
 });
 
 /**
  * Configuration options for the SQLite driver.
  */
 export type Options = {
-   /** Database file path or URL. */
-   url: string;
+  /** Database file path or URL. */
+  url: string;
 } & BetterSqlite3Options;

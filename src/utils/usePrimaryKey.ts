@@ -11,11 +11,11 @@ const ColumnsSymbol = Table.Symbol.Columns as symbol;
  * @returns Object containing only primary key columns
  */
 export function usePrimaryColumns<T extends Table>(table: T): InferPrimaryColumns<T> {
-   // @ts-expect-error Internal Drizzle API
-   const columns = table[ColumnsSymbol] as typeof table._.columns;
-   return Object.fromEntries(
-     Object.entries(columns).filter(([_, column]) => {
-       return column.primary;
-     }),
-   ) as InferPrimaryColumns<T>;
+  // @ts-expect-error Internal Drizzle API
+  const columns = table[ColumnsSymbol] as typeof table._.columns;
+  return Object.fromEntries(
+    Object.entries(columns).filter(([_, column]) => {
+      return column.primary;
+    }),
+  ) as InferPrimaryColumns<T>;
 }

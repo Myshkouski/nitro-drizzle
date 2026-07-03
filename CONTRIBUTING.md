@@ -13,6 +13,7 @@ By participating in this project, you agree to maintain a respectful, welcoming,
 To set up a local development environment:
 
 1. **Fork and Clone the Repository**
+
    ```bash
    git clone https://github.com/your-username/nitro-drizzle.git
    cd nitro-drizzle
@@ -20,6 +21,7 @@ To set up a local development environment:
 
 2. **Install Dependencies**
    The project uses `pnpm` for managing package dependencies.
+
    ```bash
    pnpm install
    ```
@@ -40,6 +42,7 @@ Before submitting any changes, make sure your code passes all tests and conforms
 - **Unit Tests:** `pnpm test` (using `vitest`)
 
 To run the production build:
+
 ```bash
 pnpm build
 ```

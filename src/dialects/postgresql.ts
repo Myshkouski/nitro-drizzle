@@ -9,15 +9,27 @@ import type { InferColumns, InferTable, OnConflictDoUpdateOptions } from ".";
  * @param options - Options containing the SET values
  * @returns The modified insert statement
  */
-export function onConflictDoUpdate<TInsert extends PgInsertBase<any, any, any, any, any, any>>(
-   target: Partial<InferColumns<InferTable<TInsert>>>,
-   insert: TInsert,
-   options: OnConflictDoUpdateOptions<TInsert>,
-): TInsert | Omit<PgInsertBase<TInsert["_"]["table"], TInsert["_"]["queryResult"], TInsert["_"]["selectedFields"], TInsert["_"]["returning"], any, "onConflictDoNothing" | "onConflictDoUpdate" | TInsert["_"]["excludedMethods"]>, "onConflictDoNothing" | "onConflictDoUpdate" | TInsert["_"]["excludedMethods"]> {
-   return insert.onConflictDoUpdate({
-     target: Object.values(target),
-     set: options.set,
-   });
+export function onConflictDoUpdate<TInsert extends PgInsertBase<any, any, any>>(
+  target: Partial<InferColumns<InferTable<TInsert>>>,
+  insert: TInsert,
+  options: OnConflictDoUpdateOptions<TInsert>,
+):
+  | TInsert
+  | Omit<
+      PgInsertBase<
+        TInsert["_"]["table"],
+        TInsert["_"]["queryResult"],
+        TInsert["_"]["selectedFields"],
+        TInsert["_"]["returning"],
+        any,
+        "onConflictDoNothing" | "onConflictDoUpdate" | TInsert["_"]["excludedMethods"]
+      >,
+      "onConflictDoNothing" | "onConflictDoUpdate" | TInsert["_"]["excludedMethods"]
+    > {
+  return insert.onConflictDoUpdate({
+    target: Object.values(target),
+    set: options.set,
+  });
 }
 
 /**
@@ -27,11 +39,25 @@ export function onConflictDoUpdate<TInsert extends PgInsertBase<any, any, any, a
  * @param insert - The insert statement
  * @returns The modified insert statement with DO NOTHING
  */
-export function onConflictDoNothing<TInsert extends PgInsertBase<any, any, any, any, any, any>>(
-   _: Partial<InferColumns<InferTable<TInsert>>>,
-   insert: TInsert,
-): TInsert | Omit<PgInsertBase<TInsert["_"]["table"], TInsert["_"]["queryResult"], TInsert["_"]["selectedFields"], TInsert["_"]["returning"], any, "onConflictDoNothing" | "onConflictDoUpdate" | TInsert["_"]["excludedMethods"]>, "onConflictDoNothing" | "onConflictDoUpdate" | TInsert["_"]["excludedMethods"]> {
-   return insert.onConflictDoNothing();
+export function onConflictDoNothing<TInsert extends PgInsertBase<any, any, any>>(
+  target: Partial<InferColumns<InferTable<TInsert>>>,
+  insert: TInsert,
+):
+  | TInsert
+  | Omit<
+      PgInsertBase<
+        TInsert["_"]["table"],
+        TInsert["_"]["queryResult"],
+        TInsert["_"]["selectedFields"],
+        TInsert["_"]["returning"],
+        any,
+        "onConflictDoNothing" | "onConflictDoUpdate" | TInsert["_"]["excludedMethods"]
+      >,
+      "onConflictDoNothing" | "onConflictDoUpdate" | TInsert["_"]["excludedMethods"]
+    > {
+  return insert.onConflictDoNothing({
+    target: Object.values(target),
+  });
 }
 
 /**
@@ -39,4 +65,4 @@ export function onConflictDoNothing<TInsert extends PgInsertBase<any, any, any, 
  * @template T - The insert type
  */
 export type InferPgTable<T extends PgInsertBase<any, any, any, any, any, any>> =
-   T extends PgInsertBase<infer TTable, any, any, any, any, any> ? TTable : never;
+  T extends PgInsertBase<infer TTable, any, any, any, any, any> ? TTable : never;
