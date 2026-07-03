@@ -1,6 +1,24 @@
 > nitro-drizzle@0.1.0 release /Users/myshkouski/Dev/myshkouski/nitro-drizzle
 > changelogen
 
+## v0.2.2
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.0...v0.2.2)
+
+### 🏡 Chore
+
+- **release:** V0.2.0 ([63f80ab](https://github.com/Myshkouski/nitro-drizzle/commit/63f80ab))
+- **release:** Add --release flag to changelogen script ([fd38f0a](https://github.com/Myshkouski/nitro-drizzle/commit/fd38f0a))
+- **release:** V0.2.1 ([220ef82](https://github.com/Myshkouski/nitro-drizzle/commit/220ef82))
+
+### 🤖 CI
+
+- **actions:** Add publish job for npm with OIDC provenance ([8f20b7c](https://github.com/Myshkouski/nitro-drizzle/commit/8f20b7c))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.1
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.0...v0.2.1)
