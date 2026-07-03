@@ -7,7 +7,7 @@ import type { VirtualModules } from "nitro-drizzle/shared";
 export async function addAugmentations(
   nitroOptions: NitroOptions,
   nitroTypes: NitroTypes,
-  augmentations: VirtualModules,
+  augmentations: VirtualModules<`${string}.d.ts`>,
 ) {
   nitroTypes.tsConfig ||= {};
   nitroTypes.tsConfig.include ||= [];
@@ -18,7 +18,7 @@ export async function addAugmentations(
 export async function addDeclarations(
   nitroOptions: NitroOptions,
   nitroTypes: NitroTypes,
-  declarations: Record<string, VirtualModules>,
+  declarations: Record<string, VirtualModules<`${string}.d.ts`>>,
 ) {
   nitroTypes.tsConfig ||= {};
 
