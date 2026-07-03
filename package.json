@@ -50,7 +50,6 @@
     "db0": "^0.3.4",
     "defu": "^6.1.7",
     "drizzle-kit": "^0.31.10",
-    "drizzle-orm": "catalog:",
     "exsolve": "^1.0.8",
     "h3": "catalog:",
     "jiti": "^2.7.0",
@@ -79,6 +78,7 @@
     "@cloudflare/workers-types": "catalog:drivers",
     "@electric-sql/pglite": "catalog:drivers",
     "better-sqlite3": "catalog:drivers",
+    "drizzle-orm": "catalog:",
     "h3": "^1.15.5",
     "mysql2": "catalog:drivers",
     "postgres": "catalog:drivers"
