@@ -4,12 +4,12 @@ on:
   push:
     branches: [main]
     tags:
-      - 'v*'
+      - "v*"
   pull_request:
     branches: [main]
 
 permissions:
-  contents: read 
+  contents: read
   id-token: write # Required for OIDC
 
 jobs:

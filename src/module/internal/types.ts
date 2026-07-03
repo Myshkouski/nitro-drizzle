@@ -37,12 +37,9 @@ function typesDir(nitroOptions: NitroOptions) {
 }
 
 function tsconfigDir(nitroOptions: NitroOptions) {
-  const tsConfigPath = resolve(
-    nitroOptions.buildDir,
-    nitroOptions.typescript.tsconfigPath
-  );
+  const tsConfigPath = resolve(nitroOptions.buildDir, nitroOptions.typescript.tsconfigPath);
   const tsconfigDir = dirname(tsConfigPath);
-  return tsconfigDir
+  return tsconfigDir;
 }
 
 async function writeTypeFiles(nitroOptions: NitroOptions, modules: VirtualModules) {
