@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { usePrimaryColumns } from "../src/utils/usePrimaryKey";
+import { usePrimaryColumns } from "nitro-drizzle/utils";
 import { pgTable, integer, text } from "drizzle-orm/pg-core";
 
 describe("usePrimaryColumns", () => {
