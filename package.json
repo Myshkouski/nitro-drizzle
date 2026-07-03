@@ -41,7 +41,7 @@
     "playground": "nitro dev playground",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "release": "changelogen"
+    "release": "changelogen --release"
   },
   "dependencies": {
     "@types/better-sqlite3": "^7.6.13",
