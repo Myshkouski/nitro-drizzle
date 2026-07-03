@@ -1,6 +1,18 @@
 > nitro-drizzle@0.1.0 release /Users/myshkouski/Dev/myshkouski/nitro-drizzle
 > changelogen
 
+## v0.2.2
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.1...v0.2.2)
+
+### 🩹 Fixes
+
+- **types:** Resolve relative paths from tsconfig directory ([6f693b4](https://github.com/Myshkouski/nitro-drizzle/commit/6f693b4))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.1
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.0...v0.2.1)
