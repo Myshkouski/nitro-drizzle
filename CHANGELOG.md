@@ -1,6 +1,26 @@
 > nitro-drizzle@0.1.0 release /Users/myshkouski/Dev/myshkouski/nitro-drizzle
 > changelogen
 
+## v0.2.5
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.4...v0.2.5)
+
+### 🚀 Enhancements
+
+- **module:** Register module type augmentations ([39fad9b](https://github.com/Myshkouski/nitro-drizzle/commit/39fad9b))
+
+### 🩹 Fixes
+
+- **context:** Handle empty datasources in template generation ([9a64396](https://github.com/Myshkouski/nitro-drizzle/commit/9a64396))
+
+### 🎨 Styles
+
+- **module:** Normalize formatting in type generation utilities ([e2ec11e](https://github.com/Myshkouski/nitro-drizzle/commit/e2ec11e))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.4
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.3...v0.2.4)
