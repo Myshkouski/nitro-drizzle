@@ -3,6 +3,10 @@ import type { DatasourceInfo } from "..";
 import type { VirtualModules } from "nitro-drizzle/shared";
 
 function runtimeDeclarations(datasources: DatasourceInfo[]) {
+  if (!datasources.length) {
+    return "";
+  }
+
   return [
     genTypeImport("nitro-drizzle/runtime", ["ToDatasourceProvider"]),
     genAugmentation("nitro-drizzle/runtime", {
@@ -26,10 +30,13 @@ function genSchemaType(imports: string[]) {
 }
 
 function moduleDeclarations(datasources: DatasourceInfo[]) {
+  if (!datasources.length) {
+    return "";
+  }
+
   const names = datasources.map((d) => d.name);
 
   return [
-    genTypeImport("nitro-drizzle/module", ["ModuleOptions"]),
     genAugmentation("nitro-drizzle/module", {
       DatasourceOptions: [
         {},
