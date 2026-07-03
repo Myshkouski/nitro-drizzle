@@ -112,6 +112,10 @@ const module: NitroModule = {
 
       const declarations = await context.declarations();
       await addDeclarations(nitro.options, types, declarations);
+
+      await addAugmentations(nitro.options, types, {
+        "nitro-drizzle/module.d.ts": /* ts */ `import "nitro-drizzle/module";`,
+      });
     });
 
     // auto-imports
@@ -167,6 +171,9 @@ const module: NitroModule = {
     if (enabledPlugins.length) {
       nitro.hooks.hook("types:extend", async (types) => {
         await addAugmentations(nitro.options, types, {
+          "nitro-drizzle/module.d.ts": /* ts */ `
+            import "nitro-drizzle/module";
+          `,
           "nitro-drizzle/plugins.d.ts": enabledPlugins
             .map((pluginId) => {
               return `import "${pluginId}";`;
