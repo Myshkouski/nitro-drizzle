@@ -1,5 +1,5 @@
 import type { NitroOptions, NitroTypes, VirtualModule } from "nitropack/types";
-import { join } from "pathe";
+import { dirname, join, resolve } from "pathe";
 import { relativeWithDot } from "./path";
 import { writeFile } from "./fs";
 import type { VirtualModules } from "nitro-drizzle/shared";
@@ -36,13 +36,22 @@ function typesDir(nitroOptions: NitroOptions) {
   return join(nitroOptions.buildDir, "types");
 }
 
+function tsconfigDir(nitroOptions: NitroOptions) {
+  const tsConfigPath = resolve(
+    nitroOptions.buildDir,
+    nitroOptions.typescript.tsconfigPath
+  );
+  const tsconfigDir = dirname(tsConfigPath);
+  return tsconfigDir
+}
+
 async function writeTypeFiles(nitroOptions: NitroOptions, modules: VirtualModules) {
   const paths: string[] = [];
   const dir = typesDir(nitroOptions);
   for (const filename in modules) {
     const typesFilename = join(dir, filename);
     await writeFile(typesFilename, await getContent(modules[filename]));
-    const relativeFilename = relativeWithDot(dir, typesFilename);
+    const relativeFilename = relativeWithDot(tsconfigDir(nitroOptions), typesFilename);
     paths.push(relativeFilename);
   }
   return paths;
