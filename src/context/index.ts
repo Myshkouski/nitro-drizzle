@@ -1,6 +1,7 @@
 import type { ConsolaInstance } from "consola";
 import { colorize, type ColorName } from "consola/utils";
 import type { Config, Config as DrizzleConfig } from "drizzle-kit";
+import { loadConfig } from "c12";
 
 import { mapAsync } from "./internal/async";
 import { accent } from "./internal/logger";
@@ -67,8 +68,8 @@ class DefaultContext implements Context {
       let datasources: DatasourceInfo[] = await mapAsync(
         drizzleConfigsResolvedPaths,
         async (path) => {
-          const config = await this.#options.resolver.import<DrizzleConfig>(path, {
-            default: true,
+          const { config } = await loadConfig<DrizzleConfig>({
+            configFile: path,
           });
           const [_, dirName] = path.match(/(.+\/(.+))\/.+$/)!.slice(1, 3) as [string, string];
 
@@ -195,12 +196,6 @@ export interface Resolver {
    * Attempts to resolve a module ID, returns undefined if not found.
    */
   tryResolve(id: string): string | undefined;
-  /**
-   * Imports a module dynamically.
-   * @param id - Module identifier to import
-   * @param options - Import options, set default: true to import default export
-   */
-  import<T>(id: string, options?: { default?: boolean }): Promise<T>;
 }
 
 export interface ContextOptions {

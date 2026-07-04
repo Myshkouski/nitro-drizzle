@@ -24,8 +24,4 @@ class JitiResolver implements Resolver {
       return this.resolve(id);
     } catch {}
   }
-
-  async import<T>(id: string, options?: { default: boolean }): Promise<T> {
-    return await this.#jiti.import<T>(id, { default: options?.default || undefined });
-  }
 }
