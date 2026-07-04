@@ -4,7 +4,6 @@ import {
   genObjectFromRaw,
   genObjectFromRawEntries,
   genSafeVariableName,
-  genString,
 } from "knitwork";
 import type { DatasourceInfo } from "..";
 import type { VirtualModules } from "nitro-drizzle/shared";
