@@ -1,6 +1,18 @@
 > nitro-drizzle@0.1.0 release /Users/myshkouski/Dev/myshkouski/nitro-drizzle
 > changelogen
 
+## v0.2.7
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.6...v0.2.7)
+
+### 💅 Refactors
+
+- **module:** Return plugin IDs instead of plugin names from enablePlugins ([52f1ea5](https://github.com/Myshkouski/nitro-drizzle/commit/52f1ea5))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.6
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.5...v0.2.6)
