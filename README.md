@@ -46,7 +46,7 @@ export default defineNitroConfig({
   modules: ["nitro-drizzle/module"],
   drizzle: {
     datasources: {
-      foo: { connector: "sqlite" },
+      content: { connector: "sqlite" },
     },
   },
 });
@@ -56,9 +56,9 @@ See [ModuleOptions](src/module/index.ts) for all available options.
 
 ### 2. Define Drizzle Config and Schema
 
-Create your Drizzle configuration files and schemas in the `baseDir` specified in `nitro.config.ts` (e.g., `server/drizzle/foo/drizzle-sqlite.config.ts` and `server/drizzle/foo/sqlite/schema.ts`).
+Create your Drizzle configuration files and schemas in the `baseDir` specified in `nitro.config.ts` (e.g., `server/drizzle/content/drizzle-sqlite.config.ts` and `server/drizzle/content/sqlite/schema.ts`).
 
-#### Example: `server/drizzle/foo/drizzle-sqlite.config.ts`
+#### Example: `server/drizzle/content/drizzle-sqlite.config.ts`
 
 ```ts
 import { defineConfig } from "nitro-drizzle/config";
@@ -68,94 +68,59 @@ export default defineConfig(
     strict: true,
     dialect: "sqlite",
     out: "./sqlite/migrations", // Migration output directory
-    schema: ["./sqlite/schema.ts"], // Path to your schema files
+    schema: "./sqlite/schema.ts", // Path to your schema files
     migrations: {
       table: "drizzle_migrations", // Table to track migrations
     },
   },
-  import.meta.url, // Pass import.meta.url for correct path resolution
+  import.meta.url, // Pass import.meta.url for compatibility with "drizzle-kit"
 );
 ```
 
-#### Example: `server/drizzle/foo/sqlite/schema.ts`
+#### Example: `server/drizzle/content/sqlite/schema.ts`
 
 ```ts
 import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 
-export const users = sqliteTable("users", {
-  id: integer("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
+export const posts = sqliteTable("posts", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  image: text("image").notNull(),
+  date: integer("date", { mode: "timestamp" }).notNull().defaultNow(),
+  authors: text("authors", { mode: "json" }).$type<number[]>(),
+});
+
+export const comments = sqliteTable("comments", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  postId: integer("post_id").notNull(),
+  authorId: integer("author_id").notNull(),
+  content: text("content").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
 ```
 
-#### Example: `server/drizzle/bar/drizzle-pglite.config.ts`
+### 3. Generate migrations
 
-```ts
-import { defineConfig } from "nitro-drizzle/config";
-
-export default defineConfig(
-  {
-    dialect: "postgresql",
-    driver: "pglite",
-    out: "./postgres/migrations",
-    schema: ["./postgres/schema.ts"],
-    migrations: {
-      table: "drizzle_migrations",
-    },
-  },
-  import.meta.url,
-);
+```shell
+drizzle-kit generate --config server/drizzle/content/drizzle-sqlite.config.ts
 ```
 
-#### Example: `server/drizzle/bar/postgres/schema.ts`
-
-```ts
-import { pgTable, serial, text } from "drizzle-orm/pg-core";
-
-export const products = pgTable("products", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description"),
-});
-```
-
-### 3. Use Datasources in API Routes
+### 4. Use Datasources in API Routes
 
 You can access your configured datasources in your Nitro API routes using `useDatasource`.
 
 ```ts
 // server/routes/index.ts
-import { eventHandler } from "h3";
+import { defineEventHandler } from "h3";
 import { useDatasource } from "nitro-drizzle/runtime";
 
-export default eventHandler(async () => {
-  const fooDatasource = await useDatasource("foo"); // Access the 'foo' datasource
-  const barDatasource = await useDatasource("bar"); // Access the 'bar' datasource
-
-  await Promise.all([fooDatasource.waitReady(), barDatasource.waitReady()]);
-
-  // Example usage with 'foo' (SQLite)
-  const newUsers = await fooDatasource.database
-    .insert(fooDatasource.schema.users)
-    .values([
-      { name: "Alice", email: "alice@example.com" },
-      { name: "Bob", email: "bob@example.com" },
-    ])
-    .returning()
-    .all();
-
-  // Example usage with 'bar' (PostgreSQL with pglite)
-  const newProducts = await barDatasource.database
-    .insert(barDatasource.schema.products)
-    .values([
-      { name: "Laptop", description: "Powerful laptop" },
-      { name: "Mouse", description: "Wireless mouse" },
-    ])
-    .returning()
-    .all();
-
-  return { newUsers, newProducts };
+export default defineEventHandler(async () => {
+  await event.context.drizzle.waitReady(); // Wait for "drizzle:init" hook finished
+  const { database, waitReady } = await useDatasource("content"); // Access the 'content' datasource
+  await waitReady(); // Wait datasource is ready
+  const posts = await database.select().from(schema.posts).limit(10);
+  return { posts };
 });
 ```
 
