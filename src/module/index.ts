@@ -13,6 +13,7 @@ import { addInlineExternals } from "./internal/externals";
 import { reloadPlugin } from "./internal/reload";
 import { addPlugin } from "./internal/rollup";
 import { migrationsVirtualModule } from "./internal/virtual";
+import { enablePlugins } from "./internal/plugins";
 
 /**
  * Datasource-specific configuration options.
@@ -37,9 +38,7 @@ export interface ModuleOptions {
    * Patterns to search Drizzle configs
    */
   configPattern: ConfigPattern;
-  /**
-   * @deprecated Use 'nitro.database' instead.
-   */
+
   datasources?: DatasourceOptions;
 
   /**
@@ -60,15 +59,19 @@ const defaultModuleOptions: ModuleOptions = {
 const module: NitroModule = {
   name: pkgName,
   async setup(nitro) {
+    const moduleOptions = defu(nitro.options.drizzle, defaultModuleOptions);
+
+    const plugins = enablePlugins(nitro.options, moduleOptions);
+
     const resolver = createResolver(nitro.options.rootDir, {
       alias: nitro.options.alias,
     });
-    const moduleOptions = defu(nitro.options.drizzle, defaultModuleOptions);
 
     const resolvedBaseDir = resolve(
       nitro.options.srcDir,
       resolveAlias(moduleOptions.baseDir, nitro.options.alias),
     );
+
     const contextOptions: ContextOptions = {
       cwd: process.cwd(),
       resolver: resolver,
@@ -76,17 +79,13 @@ const module: NitroModule = {
       logger: nitro.logger,
       configPattern: moduleOptions.configPattern,
       datasource: { ...moduleOptions.datasources },
+      plugins,
     };
+
     const context = createContext(contextOptions);
 
     // add inline externals
     addInlineExternals(nitro.options);
-
-    // specify plugin names to preserve order
-    const plugins: Record<"init" | "migrate", boolean> = {
-      migrate: false,
-      init: true,
-    };
 
     // add virtual modules
     Object.assign(
@@ -94,29 +93,6 @@ const module: NitroModule = {
       await context.virtualModules(),
       migrationsVirtualModule(await context.datasources(), moduleOptions.migrations),
     );
-
-    nitro.options.typescript = defu(nitro.options.typescript, {
-      tsConfig: {
-        compilerOptions: {
-          paths: {
-            "#nitro-drizzle/*": ["./nitro-drizzle/virtual"],
-          },
-        },
-      },
-    });
-
-    // extend types
-    nitro.hooks.hook("types:extend", async (types) => {
-      const augmentations = await context.augmentations();
-      await addAugmentations(nitro.options, types, augmentations);
-
-      const declarations = await context.declarations();
-      await addDeclarations(nitro.options, types, declarations);
-
-      await addAugmentations(nitro.options, types, {
-        "nitro-drizzle/module.d.ts": /* ts */ `import "nitro-drizzle/module";`,
-      });
-    });
 
     // auto-imports
     if (nitro.options.imports) {
@@ -141,10 +117,6 @@ const module: NitroModule = {
           handler: "nitro-drizzle/migrations/task",
         };
       }
-
-      if (moduleOptions.migrations.migrateOnInit) {
-        plugins.migrate = true;
-      }
     }
 
     // watch options
@@ -152,33 +124,19 @@ const module: NitroModule = {
       await addPlugin(config, reloadPlugin(nitro, contextOptions));
     });
 
-    // add plugins
-    const enabledPlugins = Object.entries(plugins)
-      .reduce((plugins, [pluginName, enabled]) => {
-        if (enabled) {
-          plugins.push(pluginName);
-        }
-        return plugins;
-      }, [] as string[])
-      .map((pluginName) => {
-        return `nitro-drizzle/plugins/${pluginName}`;
+    // extend types
+    nitro.hooks.hook("types:extend", async (types) => {
+      const runtimeTypeDeclarations = await context.runtimeTypeDeclarations();
+      const moduleTypeDeclarations = await context.moduleTypeDeclarations();
+
+      await addAugmentations(nitro.options, types, {
+        ...runtimeTypeDeclarations,
+        ...moduleTypeDeclarations,
       });
 
-    for (const pluginId of enabledPlugins) {
-      nitro.options.plugins.push(pluginId);
-    }
-
-    if (enabledPlugins.length) {
-      nitro.hooks.hook("types:extend", async (types) => {
-        await addAugmentations(nitro.options, types, {
-          "nitro-drizzle/plugins.d.ts": enabledPlugins
-            .map((pluginId) => {
-              return `import "${pluginId}";`;
-            })
-            .join("\n"),
-        });
-      });
-    }
+      const virtualTypeDeclarations = await context.virtualTypeDeclarations();
+      await addDeclarations(nitro.options, types, virtualTypeDeclarations);
+    });
   },
 };
 

@@ -4,15 +4,19 @@ import { relativeWithDot } from "./path";
 import { writeFile } from "./fs";
 import type { VirtualModules } from "nitro-drizzle/shared";
 
+export function addTsConfigInclude(nitroTypes: NitroTypes, paths: readonly string[]) {
+  nitroTypes.tsConfig ||= {};
+  nitroTypes.tsConfig.include ||= [];
+  nitroTypes.tsConfig.include.push(...paths);
+}
+
 export async function addAugmentations(
   nitroOptions: NitroOptions,
   nitroTypes: NitroTypes,
   augmentations: VirtualModules<`${string}.d.ts`>,
 ) {
-  nitroTypes.tsConfig ||= {};
-  nitroTypes.tsConfig.include ||= [];
   const paths = await writeTypeFiles(nitroOptions, augmentations);
-  nitroTypes.tsConfig.include.push(...paths);
+  addTsConfigInclude(nitroTypes, paths);
 }
 
 export async function addDeclarations(
@@ -21,13 +25,14 @@ export async function addDeclarations(
   declarations: Record<string, VirtualModules<`${string}.d.ts`>>,
 ) {
   nitroTypes.tsConfig ||= {};
+  nitroTypes.tsConfig.compilerOptions ||= {};
+  nitroTypes.tsConfig.compilerOptions.paths ||= {};
 
   for (const alias in declarations) {
-    nitroTypes.tsConfig.compilerOptions ||= {};
-    nitroTypes.tsConfig.compilerOptions.paths ||= {};
-    nitroTypes.tsConfig.compilerOptions.paths[alias] = await writeTypeFiles(
-      nitroOptions,
-      declarations[alias],
+    const paths = await writeTypeFiles(nitroOptions, declarations[alias]);
+
+    nitroTypes.tsConfig.compilerOptions.paths[alias] = paths.map((path) =>
+      path.replace(/\.d\.ts$/, ""),
     );
   }
 }

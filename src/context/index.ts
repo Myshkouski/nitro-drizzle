@@ -5,9 +5,14 @@ import type { Config, Config as DrizzleConfig } from "drizzle-kit";
 import { mapAsync } from "./internal/async";
 import { accent } from "./internal/logger";
 import { resolveFiles } from "./internal/fs";
-import { augmentations, declarations } from "./internal/templates";
+import {
+  dialectDeclarations,
+  genReference,
+  moduleTypeDeclarations,
+  runtimeDeclarations,
+} from "./internal/templates";
 import { transformDrizzleConfig } from "./internal/config";
-import { virtualModules } from "./internal/virtual";
+import { dialectVirtualModules, runtimeVirtualModule } from "./internal/virtual";
 
 import type { MaybePromise, VirtualModules } from "nitro-drizzle/shared";
 
@@ -24,15 +29,14 @@ export interface Context {
    */
   datasources(): MaybePromise<DatasourceInfo[]>;
   /**
-   * Returns type declaration code for all datasources.
-   */
-  augmentations(): MaybePromise<VirtualModules>;
-
-  declarations(): MaybePromise<Record<string, VirtualModules>>;
-  /**
    * Returns virtual module code for runtime datasource access.
    */
   virtualModules(): MaybePromise<VirtualModules>;
+  virtualTypeDeclarations(): MaybePromise<Record<string, VirtualModules>>;
+  moduleTypeDeclarations(): MaybePromise<VirtualModules<`${string}.d.ts`>>;
+  runtimeTypeDeclarations(
+    // options?: RuntimeDeclarationOptions,
+  ): MaybePromise<VirtualModules<`${string}.d.ts`>>;
 }
 
 class DefaultContext implements Context {
@@ -128,16 +132,45 @@ class DefaultContext implements Context {
     return this.#datasources;
   }
 
-  async augmentations(): Promise<VirtualModules> {
-    return augmentations(await this.datasources());
+  async virtualTypeDeclarations(): Promise<Record<string, VirtualModules<`${string}.d.ts`>>> {
+    const datasources = [...(await this.datasources())].filter((d) => d.enabled);
+    return {
+      "#nitro-drizzle/*": {
+        "nitro-drizzle/virtual.d.ts": [dialectDeclarations(datasources)].join("\n"),
+      },
+    };
   }
 
-  async declarations(): Promise<Record<string, VirtualModules>> {
-    return declarations(await this.datasources());
+  async moduleTypeDeclarations(): Promise<VirtualModules> {
+    return moduleTypeDeclarations(await this.datasources());
   }
 
-  async virtualModules(): Promise<VirtualModules> {
-    return virtualModules(await this.datasources());
+  async runtimeTypeDeclarations(
+    // options?: RuntimeDeclarationOptions,
+  ): Promise<VirtualModules<`${string}.d.ts`>> {
+    const datasources = await this.datasources();
+    const references = new Set([
+      { types: "nitro-drizzle/runtime" },
+      ...this.#options.plugins.map((pluginName) => {
+        return { types: `nitro-drizzle/plugins/${pluginName}` };
+      }),
+    ]);
+    const content = [
+      ...[...references.values()].map((reference) => genReference(reference)),
+      runtimeDeclarations(datasources),
+      /* ts */ `export {};`,
+    ].join("\n");
+    return {
+      "nitro-drizzle/runtime.d.ts": content,
+    };
+  }
+
+  async virtualModules(): Promise<VirtualModules<`#nitro-drizzle/${string}`>> {
+    const datasources = await this.datasources();
+    return {
+      "#nitro-drizzle/runtime": runtimeVirtualModule(datasources),
+      ...dialectVirtualModules(datasources),
+    };
   }
 
   reload() {
@@ -170,6 +203,8 @@ export interface Resolver {
   import<T>(id: string, options?: { default?: boolean }): Promise<T>;
 }
 
+export type PluginName = "init" | "migrate";
+
 export interface ContextOptions {
   logger?: ConsolaInstance;
   /**
@@ -192,6 +227,8 @@ export interface ContextOptions {
    * Connector options
    */
   datasource: Record<string, { connector: string }>;
+
+  plugins: readonly PluginName[];
 }
 
 /**

@@ -1,8 +1,14 @@
-import { genTypeImport, genAugmentation, genInlineTypeImport, genString } from "knitwork";
+import {
+  genTypeImport,
+  genAugmentation,
+  genInlineTypeImport,
+  genString,
+  genExport,
+} from "knitwork";
 import type { DatasourceInfo } from "..";
 import type { VirtualModules } from "nitro-drizzle/shared";
 
-function runtimeDeclarations(datasources: DatasourceInfo[]) {
+export function runtimeDeclarations(datasources: DatasourceInfo[]) {
   if (!datasources.length) {
     return "";
   }
@@ -29,15 +35,30 @@ function genSchemaType(imports: string[]) {
   return imports.map((id) => `typeof import('${id}')`).join(" & ");
 }
 
-function moduleDeclarations(datasources: DatasourceInfo[]) {
+export type TypeReference = { types: string };
+
+export type PathReference = { path: string };
+
+export function genReference(reference: TypeReference | PathReference) {
+  return /* ts */ `/// <reference ${Object.entries(reference)
+    .map(([prop, value]) => `${prop}="${value}"`)
+    .join("")} />`;
+}
+
+export function moduleTypeDeclarations(
+  datasources: DatasourceInfo[],
+): VirtualModules<`${string}.d.ts`> {
   if (!datasources.length) {
-    return "";
+    return {};
   }
 
   const names = datasources.map((d) => d.name);
 
-  return [
-    genAugmentation("nitro-drizzle/module", {
+  const moduleId = "nitro-drizzle/module";
+
+  const content = [
+    genReference({ types: moduleId }),
+    genAugmentation(moduleId, {
       DatasourceOptions: [
         {},
         {
@@ -45,38 +66,23 @@ function moduleDeclarations(datasources: DatasourceInfo[]) {
         },
       ],
     }),
+    /* ts */ `export {};`,
   ].join("\n");
-}
 
-export function augmentations(datasources: DatasourceInfo[]): VirtualModules<`${string}.d.ts`> {
   return {
-    "nitro-drizzle/augmentations.d.ts": [
-      runtimeDeclarations(datasources),
-      moduleDeclarations(datasources),
-      /* ts */ `export {};`,
-    ].join("\n"),
+    "nitro-drizzle/module.d.ts": content,
   };
 }
 
-function dialectDeclarations(datasources: DatasourceInfo[]) {
+export function dialectDeclarations(datasources: DatasourceInfo[]) {
   return datasources
     .filter((d) => d.enabled)
     .map(({ name, dialect }) => {
       return /*ts*/ `
-      declare module "#nitro-drizzle/dialects/${name}" {
-        export * from "nitro-drizzle/dialects/${dialect}";
-      }
-    `;
+        declare module "#nitro-drizzle/dialects/${name}" {
+          ${genExport(`nitro-drizzle/dialects/${dialect}`, "*")}
+        }
+      `;
     })
     .join("\n");
-}
-
-export function declarations(
-  datasources: DatasourceInfo[],
-): Record<string, VirtualModules<`${string}.d.ts`>> {
-  return {
-    "#nitro-drizzle/*": {
-      "nitro-drizzle/declarations.d.ts": [dialectDeclarations(datasources)].join("\n"),
-    },
-  };
 }

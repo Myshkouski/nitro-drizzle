@@ -87,7 +87,7 @@ export type DatasourceProviderConfig<T extends DatasourceProvider<any, any>> =
 /**
  * Configuration type mapping datasource names to their configurations.
  */
-export type Config = {
+export type DatasourceConfig = {
   [K in keyof DatasourceRegistry]: DatasourceProviderConfig<DatasourceRegistry[K]>;
 };
 
@@ -96,7 +96,7 @@ export type Config = {
  * Used for Nitro runtime config.
  */
 export type RuntimeConfig = {
-  [K in keyof Config]: PrimitiveProps<Config[K]>;
+  [K in keyof DatasourceConfig]: PrimitiveProps<DatasourceConfig[K]>;
 };
 
 declare module "nitropack/types" {
@@ -106,8 +106,8 @@ declare module "nitropack/types" {
 }
 
 type ConfigHookArgs = {
-  [K in keyof Config]: [name: K, config: Config[K]];
-}[keyof Config];
+  [K in keyof DatasourceConfig]: [name: K, config: DatasourceConfig[K]];
+}[keyof DatasourceConfig];
 
 interface ConfigHooks {
   "drizzle:config": (...args: ConfigHookArgs) => void | Promise<void>;

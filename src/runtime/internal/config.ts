@@ -1,9 +1,9 @@
 import { defu } from "defu";
 import { useNitroApp, useRuntimeConfig } from "nitropack/runtime";
 
-import type { Datasources, Config } from "..";
+import type { Datasources, DatasourceConfig } from "..";
 
-const datasourceConfig: Partial<Config> = {};
+const datasourceConfig: Partial<DatasourceConfig> = {};
 
 /**
  * @internal
