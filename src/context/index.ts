@@ -35,9 +35,7 @@ export interface Context {
   virtualModules(): MaybePromise<VirtualModules>;
   virtualTypeDeclarations(): MaybePromise<Record<string, VirtualModules>>;
   moduleTypeDeclarations(): MaybePromise<VirtualModules<`${string}.d.ts`>>;
-  runtimeTypeDeclarations(
-    // options?: RuntimeDeclarationOptions,
-  ): MaybePromise<VirtualModules<`${string}.d.ts`>>;
+  runtimeTypeDeclarations(): MaybePromise<VirtualModules<`${string}.d.ts`>>;
 }
 
 class DefaultContext implements Context {
@@ -146,9 +144,7 @@ class DefaultContext implements Context {
     return moduleTypeDeclarations(await this.datasources());
   }
 
-  async runtimeTypeDeclarations(
-    // options?: RuntimeDeclarationOptions,
-  ): Promise<VirtualModules<`${string}.d.ts`>> {
+  async runtimeTypeDeclarations(): Promise<VirtualModules<`${string}.d.ts`>> {
     const datasources = await this.datasources();
     const references = new Set([
       { types: "nitro-drizzle/runtime" },
