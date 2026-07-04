@@ -37,6 +37,7 @@
     "build": "tsdown",
     "build:dev": "tsdown --watch",
     "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
     "lint": "oxlint",
     "playground": "nitro dev playground",
     "test": "vitest run",

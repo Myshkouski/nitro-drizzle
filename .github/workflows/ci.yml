@@ -28,6 +28,7 @@ jobs:
       - run: pnpm build
       - run: pnpm typecheck
       - run: pnpm lint
+      - run: pnpm fmt:check
       - run: pnpm test
 
   publish:
