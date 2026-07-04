@@ -13,7 +13,9 @@ export function enablePlugins(
 
   plugins.push("init");
 
-  nitroOptions.plugins.push(...plugins.map((pluginName) => `nitro-drizzle/plugins/${pluginName}`));
+  const pluginIds = plugins.map((pluginName) => `nitro-drizzle/plugins/${pluginName}`);
 
-  return plugins;
+  nitroOptions.plugins.push(...pluginIds);
+
+  return pluginIds;
 }
