@@ -1,12 +1,11 @@
-import type { PluginName } from "nitro-drizzle/context";
 import type { NitroOptions } from "nitropack";
 import type { ModuleOptions } from "..";
 
 export function enablePlugins(
   nitroOptions: NitroOptions,
   moduleOptions: ModuleOptions,
-): readonly PluginName[] {
-  const plugins: PluginName[] = [];
+): readonly string[] {
+  const plugins: ("init" | "migrate")[] = [];
 
   if (moduleOptions.migrations && moduleOptions.migrations.migrateOnInit) {
     plugins.push("migrate");

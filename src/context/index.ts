@@ -151,8 +151,8 @@ class DefaultContext implements Context {
     const datasources = await this.datasources();
     const references = new Set([
       { types: "nitro-drizzle/runtime" },
-      ...this.#options.plugins.map((pluginName) => {
-        return { types: `nitro-drizzle/plugins/${pluginName}` };
+      ...this.#options.plugins.map((pluginId) => {
+        return { types: pluginId };
       }),
     ]);
     const content = [
@@ -203,8 +203,6 @@ export interface Resolver {
   import<T>(id: string, options?: { default?: boolean }): Promise<T>;
 }
 
-export type PluginName = "init" | "migrate";
-
 export interface ContextOptions {
   logger?: ConsolaInstance;
   /**
@@ -228,7 +226,7 @@ export interface ContextOptions {
    */
   datasource: Record<string, { connector: string }>;
 
-  plugins: readonly PluginName[];
+  plugins: readonly string[];
 }
 
 /**
