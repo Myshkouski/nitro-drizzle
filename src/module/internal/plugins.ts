@@ -14,7 +14,7 @@ export function enablePlugins(
 
   plugins.push("init");
 
-  nitroOptions.plugins.push(...plugins);
+  nitroOptions.plugins.push(...plugins.map((pluginName) => `nitro-drizzle/plugins/${pluginName}`));
 
   return plugins;
 }
