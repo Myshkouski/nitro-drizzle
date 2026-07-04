@@ -167,6 +167,28 @@ If you enabled Nitro tasks in `nitro.config.ts`, you can run migrations via the 
 npx nitro task drizzle:migrate
 ```
 
+## 📁 Sample Project Structure
+
+A minimal layout with SQLite database for `content` and PostgreSQL database for `users`. Each datasource has its own drizzle config, schema, and migrations folder.
+
+```
+blog-api/
+├── nitro.config.ts
+├── package.json
+└── server/
+    └── drizzle/
+        ├── content/
+        │   ├── drizzle-sqlite.config.ts
+        │   └── sqlite/
+        │       ├── migrations/*.sql
+        │       └── schema/*.ts
+        └── users/
+            ├── drizzle-postgresql.config.ts
+            └── postgresql/
+                ├── migrations/*.sql
+                └── schema.ts
+```
+
 ## 📖 API Documentation
 
 ### `useDatasource(name: string, options?: UseDatasourceOptions)`
