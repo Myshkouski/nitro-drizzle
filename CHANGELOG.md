@@ -1,6 +1,35 @@
 > nitro-drizzle@0.1.0 release /Users/myshkouski/Dev/myshkouski/nitro-drizzle
 > changelogen
 
+## v0.2.6
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.5...v0.2.6)
+
+### 🩹 Fixes
+
+- **module:** Remove redundant module type augmentation ([4b40dd5](https://github.com/Myshkouski/nitro-drizzle/commit/4b40dd5))
+- **module:** Ensure plugin names include nitro-drizzle/plugins prefix ([8d1c39d](https://github.com/Myshkouski/nitro-drizzle/commit/8d1c39d))
+
+### 💅 Refactors
+
+- **module:** Add generic constraint to virtual module types ([24e1622](https://github.com/Myshkouski/nitro-drizzle/commit/24e1622))
+- **module:** Integrate plugin enablement and clean up type system ([fd0717a](https://github.com/Myshkouski/nitro-drizzle/commit/fd0717a))
+- **module:** Remove PluginName type constraint and allow direct plugin IDs ([e365a83](https://github.com/Myshkouski/nitro-drizzle/commit/e365a83))
+- **virtual:** Pre-compute merged schema variables in runtime module ([ccbf4ab](https://github.com/Myshkouski/nitro-drizzle/commit/ccbf4ab))
+
+### 🏡 Chore
+
+- **config:** Add CHANGELOG.md to oxfmt ignore patterns ([d779d87](https://github.com/Myshkouski/nitro-drizzle/commit/d779d87))
+- **context:** Remove unused genString import ([5f1c422](https://github.com/Myshkouski/nitro-drizzle/commit/5f1c422))
+
+### 🤖 CI
+
+- **github:** Add fmt:check step to CI workflow ([cad4bb8](https://github.com/Myshkouski/nitro-drizzle/commit/cad4bb8))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.5
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.4...v0.2.5)
