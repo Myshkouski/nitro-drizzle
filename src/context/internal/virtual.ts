@@ -13,15 +13,24 @@ function genDatasourceModuleVariableName(dbModuleIndex: number) {
   return genSafeVariableName(`dbModule${dbModuleIndex}`);
 }
 
+function genMergedSchemaVariableName(dbModuleIndex: number) {
+  return genSafeVariableName(`mergedSchema${dbModuleIndex}`);
+}
+
 const genSchemaModuleVariableName = (dbModuleIndex: number, schemaIndex: number) =>
   genSafeVariableName(`schemaModule${dbModuleIndex}_${schemaIndex}`);
 
 function mergeSchemaModules(schemaIds: string[], dbModuleIndex: number) {
-  return schemaIds
-    .map((_, schemaModuleIdIndex) => {
-      return ", " + genSchemaModuleVariableName(dbModuleIndex, schemaModuleIdIndex);
-    })
-    .join("");
+  return /* js */ `
+    Object.assign(
+      ${[
+        /* js */ `{}`,
+        ...schemaIds.map((_, schemaModuleIdIndex) =>
+          genSchemaModuleVariableName(dbModuleIndex, schemaModuleIdIndex),
+        ),
+      ].join(",")}
+    )
+  `;
 }
 
 export function runtimeVirtualModule(datasources: DatasourceInfo[]) {
@@ -40,35 +49,50 @@ export function runtimeVirtualModule(datasources: DatasourceInfo[]) {
         }),
       ];
 
+      const mergedSchemaVariableName = genMergedSchemaVariableName(datasourceIndex);
+      const mergedSchemaObject = mergeSchemaModules(schema, datasourceIndex);
+
+      const schemaDefinitions = [
+        /* js */ `const ${mergedSchemaVariableName} = ${mergedSchemaObject};`,
+      ];
+
       const entries: [string, string][] = [
         [
-          genString(name),
+          name,
           genObjectFromRaw({
-            create: /* js */ `function (config) { return ${datasourceModuleVariableName}(config, this.schema) }`,
-            schema: `Object.assign({}${mergeSchemaModules(schema, datasourceIndex)})`,
+            create: /* js */ `(config) => ${datasourceModuleVariableName}(config, ${mergedSchemaVariableName})`,
+            schema: mergedSchemaVariableName,
           }),
         ],
       ];
 
       return {
         imports,
+        schemaDefinitions,
         entries,
       };
     })
     .reduce(
-      (acc, { imports, entries }) => {
+      (acc, { imports, schemaDefinitions, entries }) => {
         return {
           imports: [...acc.imports, ...imports],
+          schemaDefinitions: [...acc.schemaDefinitions, ...schemaDefinitions],
           entries: [...acc.entries, ...entries],
         };
       },
-      { imports: [] as string[], entries: [] as [string, string][] },
+      {
+        imports: [] as string[],
+        schemaDefinitions: [] as string[],
+        entries: [] as [string, string][],
+      },
     );
 
   const datasourceRegistryVarName = genSafeVariableName("datasourceRegistry");
 
   return /* js */ `
     ${parts.imports.join("\n")}
+    
+    ${parts.schemaDefinitions.join("\n")}
     
     const ${datasourceRegistryVarName} = ${genObjectFromRawEntries(parts.entries)};
 
