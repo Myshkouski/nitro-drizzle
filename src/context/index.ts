@@ -85,7 +85,7 @@ class DefaultContext implements Context {
           (d) => d.name == name && options.connector == (d.driver ? d.driver : d.dialect),
         );
         if (!datasource) {
-          throw new Error("Unable to resolve datasource " + name);
+          return _datasources;
         }
         return [..._datasources, datasource];
       }, [] as DatasourceInfo[]);
