@@ -2,6 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/nitro-drizzle.svg)](https://www.npmjs.com/package/nitro-drizzle)
 [![Build Status](https://github.com/Myshkouski/nitro-drizzle/actions/workflows/ci.yml/badge.svg)](https://github.com/Myshkouski/nitro-drizzle/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/myshkouski/nitro-drizzle/graph/badge.svg?token=98LDGXABMO)](https://codecov.io/github/myshkouski/nitro-drizzle)
 [![License](https://img.shields.io/github/license/Myshkouski/nitro-drizzle.svg)](https://github.com/Myshkouski/nitro-drizzle/blob/main/LICENSE)
 
 `nitro-drizzle` is a powerful module designed to seamlessly integrate the [Drizzle ORM](https://orm.drizzle.team/) with your [Nitro](https://nitro.unjs.io/) applications. It simplifies database management, schema definition, and migrations, allowing you to build robust and scalable backend services with ease.
