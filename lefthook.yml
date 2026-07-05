@@ -1,0 +1,14 @@
+colors: false
+no_auto_install: true
+no_tty: true
+
+output:
+  - summary
+
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      run: pnpm lint --no-error-on-unmatched-pattern {staged_files}
+    check-format:
+      run: pnpm fmt:check {staged_files}

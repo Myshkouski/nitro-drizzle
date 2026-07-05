@@ -73,6 +73,7 @@
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/ui": "4.1.9",
     "changelogen": "^0.6.0",
+    "lefthook": "^2.1.9",
     "listhen": "^1.10.0",
     "oxfmt": "^0.57.0",
     "oxlint": "^1.71.0",
