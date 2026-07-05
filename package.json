@@ -41,6 +41,7 @@
     "lint": "oxlint",
     "playground": "nitro dev playground",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "release": "changelogen --release"
   },
@@ -69,6 +70,8 @@
     "@testcontainers/mysql": "catalog:testcontainers",
     "@testcontainers/postgresql": "catalog:testcontainers",
     "@types/node": "^25.6.2",
+    "@vitest/coverage-v8": "^4.1.9",
+    "@vitest/ui": "4.1.9",
     "changelogen": "^0.6.0",
     "listhen": "^1.10.0",
     "oxfmt": "^0.57.0",
