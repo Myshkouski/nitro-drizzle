@@ -1,5 +1,4 @@
 colors: false
-no_auto_install: true
 no_tty: true
 
 output:
