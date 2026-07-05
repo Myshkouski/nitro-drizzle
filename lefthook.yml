@@ -10,4 +10,4 @@ pre-commit:
     lint:
       run: pnpm lint --no-error-on-unmatched-pattern {staged_files}
     check-format:
-      run: pnpm fmt:check {staged_files}
+      run: pnpm fmt:check --no-error-on-unmatched-pattern {staged_files}
