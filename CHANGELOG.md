@@ -1,6 +1,3 @@
-> nitro-drizzle@0.1.0 release /Users/myshkouski/Dev/myshkouski/nitro-drizzle
-> changelogen
-
 ## v0.2.7
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.6...v0.2.7)
