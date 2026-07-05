@@ -49,7 +49,7 @@ export interface ModuleOptions {
 
 const defaultModuleOptions: ModuleOptions = {
   baseDir: "~/drizzle",
-  configPattern: ["drizzle.config.*", "drizzle-*.config.*"],
+  configPattern: ["drizzle.config.{js,ts}", "drizzle-*.config.{js,ts}"],
   migrations: {
     storageBase: "drizzle:migrations",
     migrateOnInit: false,
