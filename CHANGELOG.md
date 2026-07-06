@@ -1,3 +1,45 @@
+## v0.2.8
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.7...v0.2.8)
+
+### 🚀 Enhancements
+
+- **test:** Add testcontainers setup for database driver tests ([6f1169e](https://github.com/Myshkouski/nitro-drizzle/commit/6f1169e))
+- **ci:** Enable test coverage reporting in CI pipeline ([b5a8dc0](https://github.com/Myshkouski/nitro-drizzle/commit/b5a8dc0))
+- **test:** Add json and lcov coverage reporters to vitest config ([c40b733](https://github.com/Myshkouski/nitro-drizzle/commit/c40b733))
+- **tooling:** Add lefthook for git hooks management ([d97fa3c](https://github.com/Myshkouski/nitro-drizzle/commit/d97fa3c))
+
+### 🩹 Fixes
+
+- **context:** Handle missing datasource names gracefully ([c3e35f2](https://github.com/Myshkouski/nitro-drizzle/commit/c3e35f2))
+- **config:** Restrict config pattern to js and ts files ([50a57b5](https://github.com/Myshkouski/nitro-drizzle/commit/50a57b5))
+- **config:** Enable automatic lefthook installation ([aae82a1](https://github.com/Myshkouski/nitro-drizzle/commit/aae82a1))
+- **config:** Prevent fmt:check hook from failing on unmatched patterns ([9030018](https://github.com/Myshkouski/nitro-drizzle/commit/9030018))
+
+### 💅 Refactors
+
+- **docs:** Simplify examples and remove legacy patterns ([7e9d787](https://github.com/Myshkouski/nitro-drizzle/commit/7e9d787))
+- **config:** Replace custom config loading with c12 ([788f920](https://github.com/Myshkouski/nitro-drizzle/commit/788f920))
+- **context:** Remove commented parameter from runtimeTypeDeclarations ([c0a2cc5](https://github.com/Myshkouski/nitro-drizzle/commit/c0a2cc5))
+
+### 📖 Documentation
+
+- Add sample project structure to README ([35abcfe](https://github.com/Myshkouski/nitro-drizzle/commit/35abcfe))
+- **readme:** Add codecov badge to README ([3d9e8ce](https://github.com/Myshkouski/nitro-drizzle/commit/3d9e8ce))
+- **changelog:** Clean up header formatting ([e732298](https://github.com/Myshkouski/nitro-drizzle/commit/e732298))
+
+### 🎨 Styles
+
+- **test:** Normalize quote style and formatting in vitest config ([d5723fa](https://github.com/Myshkouski/nitro-drizzle/commit/d5723fa))
+
+### 🤖 CI
+
+- Add codecov action for coverage report uploads ([8be4295](https://github.com/Myshkouski/nitro-drizzle/commit/8be4295))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.7
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.6...v0.2.7)
