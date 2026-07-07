@@ -26,6 +26,11 @@ export default defineConfig({
     tsgo: true,
   },
   unbundle: true,
+  unused: true,
+  publint: true,
+  attw: {
+    profile: "esm-only",
+  },
   exports: false,
   clean: true,
   sourcemap: true,

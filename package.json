@@ -66,6 +66,7 @@
     "unstorage": "^1.17.5"
   },
   "devDependencies": {
+    "@arethetypeswrong/core": "^0.18.4",
     "@cloudflare/workers-types": "^4.20260702.1",
     "@testcontainers/mysql": "catalog:testcontainers",
     "@testcontainers/postgresql": "catalog:testcontainers",
@@ -78,9 +79,11 @@
     "oxfmt": "^0.57.0",
     "oxlint": "^1.72.0",
     "oxlint-tsgolint": "^0.24.0",
+    "publint": "^0.3.21",
     "testcontainers": "catalog:testcontainers",
     "tsdown": "^0.22.3",
     "typescript": "^6.0.3",
+    "unplugin-unused": "^0.5.7",
     "vitest": "^4.1.10"
   },
   "peerDependencies": {
