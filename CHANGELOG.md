@@ -1,3 +1,19 @@
+## v0.2.9
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.8...v0.2.9)
+
+### 🚀 Enhancements
+
+- **module:** Inject nitro callbacks for context-driven setup ([dfad136](https://github.com/Myshkouski/nitro-drizzle/commit/dfad136))
+
+### 🏡 Chore
+
+- **tooling:** Add attw, publint and unused validation to build ([44ca535](https://github.com/Myshkouski/nitro-drizzle/commit/44ca535))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.8
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.7...v0.2.8)
