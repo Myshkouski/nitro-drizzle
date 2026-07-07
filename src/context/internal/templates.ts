@@ -8,7 +8,7 @@ import {
 import type { DatasourceInfo } from "..";
 import type { VirtualModules } from "nitro-drizzle/shared";
 
-export function runtimeDeclarations(datasources: DatasourceInfo[]) {
+export function runtimeDeclarations(datasources: readonly DatasourceInfo[]) {
   if (!datasources.length) {
     return "";
   }
@@ -46,7 +46,7 @@ export function genReference(reference: TypeReference | PathReference) {
 }
 
 export function moduleTypeDeclarations(
-  datasources: DatasourceInfo[],
+  datasources: readonly DatasourceInfo[],
 ): VirtualModules<`${string}.d.ts`> {
   if (!datasources.length) {
     return {};
@@ -74,7 +74,7 @@ export function moduleTypeDeclarations(
   };
 }
 
-export function dialectDeclarations(datasources: DatasourceInfo[]) {
+export function dialectDeclarations(datasources: readonly DatasourceInfo[]) {
   return datasources
     .filter((d) => d.enabled)
     .map(({ name, dialect }) => {

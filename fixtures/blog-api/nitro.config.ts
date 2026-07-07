@@ -33,6 +33,8 @@ export default defineNitroConfig({
         connector: "pglite",
       },
     },
+    // @ts-expect-error
+    unknownModuleOptions: {},
   },
   typescript: {
     tsConfig: {

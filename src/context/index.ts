@@ -2,6 +2,7 @@ import type { ConsolaInstance } from "consola";
 import { colorize, type ColorName } from "consola/utils";
 import type { Config, Config as DrizzleConfig } from "drizzle-kit";
 import { loadConfig } from "c12";
+import { pkgDir, pkgName } from "nitro-drizzle/meta";
 
 import { mapAsync } from "./internal/async";
 import { accent } from "./internal/logger";
@@ -13,14 +14,21 @@ import {
   runtimeDeclarations,
 } from "./internal/templates";
 import { transformDrizzleConfig } from "./internal/config";
-import { dialectVirtualModules, runtimeVirtualModule } from "./internal/virtual";
+import {
+  dialectVirtualModules,
+  migrationsVirtualModule,
+  runtimeVirtualModule,
+} from "./internal/virtual";
 
 import type { MaybePromise, VirtualModules } from "nitro-drizzle/shared";
+import type { ServerAssetDir } from "nitropack/types";
+import { join } from "pathe";
 
 /**
  * Context interface for managing Drizzle datasource configurations.
  */
 export interface Context {
+  init(): MaybePromise<void>;
   /**
    * Reloads the context, clearing any cached datasource information.
    */
@@ -29,13 +37,6 @@ export interface Context {
    * Returns a list of all resolved datasource information.
    */
   datasources(): MaybePromise<DatasourceInfo[]>;
-  /**
-   * Returns virtual module code for runtime datasource access.
-   */
-  virtualModules(): MaybePromise<VirtualModules>;
-  virtualTypeDeclarations(): MaybePromise<Record<string, VirtualModules>>;
-  moduleTypeDeclarations(): MaybePromise<VirtualModules<`${string}.d.ts`>>;
-  runtimeTypeDeclarations(): MaybePromise<VirtualModules<`${string}.d.ts`>>;
 }
 
 class DefaultContext implements Context {
@@ -44,6 +45,49 @@ class DefaultContext implements Context {
 
   constructor(options: ContextOptions) {
     this.#options = options;
+  }
+
+  async init(): Promise<void> {
+    const datasources = await this.datasources();
+
+    await this.#options.plugins(this.enabledPlugins());
+
+    const [virtualModules, virtualTypes, moduleTypes, runtimeTypes] = await Promise.all([
+      this.virtualModules(datasources),
+      this.virtualTypeDeclarations(datasources),
+      this.moduleTypeDeclarations(datasources),
+      this.runtimeTypeDeclarations(datasources),
+    ]);
+
+    await this.#options.virtualModules(virtualModules);
+
+    await this.#options.declarations({
+      virtual: virtualTypes,
+      module: moduleTypes,
+      runtime: runtimeTypes,
+    });
+
+    if (this.#options.migrations) {
+      const assets = await this.migrationAssets(datasources);
+      if (assets) {
+        await this.#options.assets(assets);
+      }
+
+      await this.#options.tasks?.({
+        "drizzle:migrate": {
+          description: "Run drizzle migrations for a datasource.",
+          handler: "nitro-drizzle/migrations/task",
+        },
+      });
+    }
+
+    if (this.#options.inlineExternals) {
+      const inlineModuleIds = ["runtime", "plugins", "migrations"].flatMap((id) => {
+        return [join(pkgName, id), join(pkgDir, "dist", id)];
+      });
+
+      await this.#options.inlineExternals(inlineModuleIds);
+    }
   }
 
   async datasources() {
@@ -131,8 +175,35 @@ class DefaultContext implements Context {
     return this.#datasources;
   }
 
-  async virtualTypeDeclarations(): Promise<Record<string, VirtualModules<`${string}.d.ts`>>> {
-    const datasources = [...(await this.datasources())].filter((d) => d.enabled);
+  private async migrationAssets(
+    datasources: readonly DatasourceInfo[],
+  ): Promise<readonly ServerAssetDir[]> {
+    const migrationOptions = this.#options.migrations;
+
+    if (!migrationOptions) {
+      return [];
+    }
+
+    return datasources.reduce((acc, { name, migrations }) => {
+      const dir = migrations.assets;
+      if (dir) {
+        acc.push({
+          baseName: `${migrationOptions.storageBase}:${name}`,
+          dir,
+          /**
+           * @todo Doesn't work in dev mode - 'fs' driver does not support 'pattern'
+           * Disabled - include all files to use with meta/_journal.json
+           */
+          // pattern: '*.sql',
+        });
+      }
+      return acc;
+    }, [] as ServerAssetDir[]);
+  }
+
+  private async virtualTypeDeclarations(
+    datasources: readonly DatasourceInfo[],
+  ): Promise<Record<string, VirtualModules<`${string}.d.ts`>>> {
     return {
       "#nitro-drizzle/*": {
         "nitro-drizzle/virtual.d.ts": [dialectDeclarations(datasources)].join("\n"),
@@ -140,15 +211,39 @@ class DefaultContext implements Context {
     };
   }
 
-  async moduleTypeDeclarations(): Promise<VirtualModules> {
-    return moduleTypeDeclarations(await this.datasources());
+  private enabledPlugins(): readonly string[] {
+    const plugins: ("init" | "migrate")[] = [];
+
+    const migrationOptions = this.#options.migrations;
+    const enableMigrationPlugin = migrationOptions
+      ? Array.isArray(migrationOptions)
+        ? 0 < migrationOptions.length
+        : true == migrationOptions.migrateOnInit
+      : false;
+
+    if (enableMigrationPlugin) {
+      plugins.push("migrate");
+    }
+
+    plugins.push("init");
+
+    const pluginIds = plugins.map((pluginName) => `nitro-drizzle/plugins/${pluginName}`);
+
+    return pluginIds;
   }
 
-  async runtimeTypeDeclarations(): Promise<VirtualModules<`${string}.d.ts`>> {
-    const datasources = await this.datasources();
+  private async moduleTypeDeclarations(
+    datasources: readonly DatasourceInfo[],
+  ): Promise<VirtualModules> {
+    return moduleTypeDeclarations(datasources);
+  }
+
+  private async runtimeTypeDeclarations(
+    datasources: readonly DatasourceInfo[],
+  ): Promise<VirtualModules<`${string}.d.ts`>> {
     const references = new Set([
       { types: "nitro-drizzle/runtime" },
-      ...this.#options.plugins.map((pluginId) => {
+      ...this.enabledPlugins().map((pluginId) => {
         return { types: pluginId };
       }),
     ]);
@@ -162,11 +257,13 @@ class DefaultContext implements Context {
     };
   }
 
-  async virtualModules(): Promise<VirtualModules<`#nitro-drizzle/${string}`>> {
-    const datasources = await this.datasources();
+  private async virtualModules(
+    datasources: readonly DatasourceInfo[],
+  ): Promise<VirtualModules<`#nitro-drizzle/${string}`>> {
     return {
       "#nitro-drizzle/runtime": runtimeVirtualModule(datasources),
       ...dialectVirtualModules(datasources),
+      ...migrationsVirtualModule(datasources, this.#options.migrations),
     };
   }
 
@@ -194,6 +291,18 @@ export interface Resolver {
   tryResolve(id: string): string | undefined;
 }
 
+export type ContextHook<TArgs extends readonly any[] = []> = (
+  this: void,
+  ...args: TArgs
+) => MaybePromise<void>;
+
+export interface MigrationOptions {
+  /** Base storage key path for migrations. */
+  storageBase: string;
+  /** Whether and which datasources to migrate on initialization. */
+  migrateOnInit: boolean | readonly string[];
+}
+
 export interface ContextOptions {
   logger?: ConsolaInstance;
   /**
@@ -217,7 +326,37 @@ export interface ContextOptions {
    */
   datasource: Record<string, { connector: string }>;
 
-  plugins: readonly string[];
+  migrations: MigrationOptions | undefined;
+
+  tasks?: ContextHook<
+    [
+      tasks: Record<
+        string,
+        {
+          handler: string;
+          description: string;
+        }
+      >,
+    ]
+  >;
+
+  plugins: ContextHook<[plugins: readonly string[]]>;
+
+  declarations: ContextHook<
+    [
+      declarations: {
+        module: VirtualModules<`${string}.d.ts`>;
+        runtime: VirtualModules<`${string}.d.ts`>;
+        virtual: Record<string, VirtualModules<`${string}.d.ts`>>;
+      },
+    ]
+  >;
+
+  virtualModules: ContextHook<[modules: VirtualModules]>;
+
+  assets: ContextHook<[assets: readonly ServerAssetDir[]]>;
+
+  inlineExternals?: ContextHook<[modules: readonly string[]]>;
 }
 
 /**

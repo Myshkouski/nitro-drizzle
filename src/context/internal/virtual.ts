@@ -1,11 +1,13 @@
 import {
+  genArrayFromRaw,
   genExport,
   genImport,
   genObjectFromRaw,
   genObjectFromRawEntries,
   genSafeVariableName,
+  genString,
 } from "knitwork";
-import type { DatasourceInfo } from "..";
+import type { DatasourceInfo, MigrationOptions } from "..";
 import type { VirtualModules } from "nitro-drizzle/shared";
 
 function genDatasourceModuleVariableName(dbModuleIndex: number) {
@@ -32,7 +34,7 @@ function mergeSchemaModules(schemaIds: string[], dbModuleIndex: number) {
   `;
 }
 
-export function runtimeVirtualModule(datasources: DatasourceInfo[]) {
+export function runtimeVirtualModule(datasources: readonly DatasourceInfo[]) {
   const parts = datasources
     .filter((datasource) => datasource.enabled)
     .map(({ name, imports: { schema, connector } }, datasourceIndex) => {
@@ -103,7 +105,7 @@ export function runtimeVirtualModule(datasources: DatasourceInfo[]) {
 
 // Replaced with aliases
 export function dialectVirtualModules(
-  datasources: DatasourceInfo[],
+  datasources: readonly DatasourceInfo[],
 ): VirtualModules<`#nitro-drizzle/${string}`> {
   return Object.fromEntries(
     datasources
@@ -115,4 +117,41 @@ export function dialectVirtualModules(
         ] as const;
       }),
   );
+}
+
+export function migrationsVirtualModule(
+  datasources: readonly DatasourceInfo[],
+  options: MigrationOptions | undefined,
+): VirtualModules<`#nitro-drizzle/${string}`> {
+  if (!options) {
+    return {};
+  }
+
+  const parts: string[] = [];
+
+  const enabledDatasources = datasources.filter((d) => d.enabled);
+
+  parts.push(/*js*/ `
+    export const migrationConfig = ${genObjectFromRawEntries(
+      enabledDatasources.map(({ name, migrations }) => {
+        return [name, JSON.stringify(migrations.config)];
+      }),
+    )};
+  `);
+
+  let migrateOnInit = enabledDatasources.map((d) => d.name);
+  if (options && Array.isArray(options.migrateOnInit)) {
+    migrateOnInit = migrateOnInit.filter((name) =>
+      (options.migrateOnInit as readonly string[]).includes(name),
+    );
+  }
+
+  parts.push(/*js*/ `
+    export const MIGRATIONS_STORAGE_BASE = ${genString(options.storageBase)};
+    export const MIGRATE_ON_INIT = ${genArrayFromRaw(migrateOnInit.map((name) => genString(name)))};
+  `);
+
+  return {
+    "#nitro-drizzle/migrations": parts.join("\n"),
+  };
 }

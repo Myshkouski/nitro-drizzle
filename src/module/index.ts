@@ -3,17 +3,21 @@ import { defu } from "defu";
 import { resolve } from "pathe";
 import { resolveAlias } from "pathe/utils";
 
-import { createContext, type ConfigPattern, type ContextOptions } from "nitro-drizzle/context";
+import {
+  createContext,
+  type ConfigPattern,
+  type ContextOptions,
+  type MigrationOptions,
+} from "nitro-drizzle/context";
+import type { VirtualModules, MaybePromise } from "nitro-drizzle/shared";
 import { pkgName } from "nitro-drizzle/meta";
 
 import { addAugmentations, addDeclarations } from "./internal/types";
 import { createResolver } from "./internal/resolver";
-import { updateMigrationAssets, type MigrationOptions } from "./internal/assets";
+import { updateServerAssets } from "./internal/assets";
 import { addInlineExternals } from "./internal/externals";
 import { reloadPlugin } from "./internal/reload";
 import { addPlugin } from "./internal/rollup";
-import { migrationsVirtualModule } from "./internal/virtual";
-import { enablePlugins } from "./internal/plugins";
 
 /**
  * Datasource-specific configuration options.
@@ -47,27 +51,27 @@ export interface ModuleOptions {
   migrations: false | MigrationOptions;
 }
 
-const defaultModuleOptions: ModuleOptions = {
-  baseDir: "~/drizzle",
-  configPattern: ["drizzle.config.{js,ts}", "drizzle-*.config.{js,ts}"],
-  migrations: {
-    storageBase: "drizzle:migrations",
-    migrateOnInit: false,
-  },
-};
+export function createDefaultOptions(): ModuleOptions {
+  return {
+    baseDir: "~/drizzle",
+    configPattern: ["drizzle.config.{js,ts}", "drizzle-*.config.{js,ts}"],
+    migrations: {
+      storageBase: "drizzle:migrations",
+      migrateOnInit: false,
+    },
+  };
+}
 
 const module: NitroModule = {
   name: pkgName,
   async setup(nitro) {
-    const moduleOptions = defu(nitro.options.drizzle, defaultModuleOptions);
-
-    const plugins = enablePlugins(nitro.options, moduleOptions);
+    const moduleOptions = defu(nitro.options.drizzle, createDefaultOptions());
 
     const resolver = createResolver(nitro.options.rootDir, {
       alias: nitro.options.alias,
     });
 
-    const resolvedBaseDir = resolve(
+    const baseDir = resolve(
       nitro.options.srcDir,
       resolveAlias(moduleOptions.baseDir, nitro.options.alias),
     );
@@ -75,24 +79,48 @@ const module: NitroModule = {
     const contextOptions: ContextOptions = {
       cwd: process.cwd(),
       resolver: resolver,
-      baseDir: resolvedBaseDir,
+      baseDir,
       logger: nitro.logger,
       configPattern: moduleOptions.configPattern,
       datasource: { ...moduleOptions.datasources },
-      plugins,
+      migrations: moduleOptions.migrations || void 0,
+
+      tasks: nitro.options.experimental.tasks
+        ? (tasks) => {
+            nitro.options.tasks ||= {};
+            Object.assign(nitro.options.tasks, tasks);
+          }
+        : void 0,
+
+      plugins(plugins) {
+        nitro.options.plugins.push(...plugins);
+      },
+
+      virtualModules(modules: VirtualModules): MaybePromise<void> {
+        Object.assign(nitro.options.virtual, modules);
+      },
+
+      declarations(declarations): MaybePromise<void> {
+        nitro.hooks.hook("types:extend", async (types) => {
+          await addAugmentations(nitro.options, types, {
+            ...declarations.runtime,
+            ...declarations.module,
+          });
+
+          await addDeclarations(nitro.options, types, declarations.virtual);
+        });
+      },
+
+      assets(assets) {
+        updateServerAssets(nitro.options, assets);
+      },
+
+      inlineExternals(modules: readonly string[]) {
+        addInlineExternals(nitro.options, modules);
+      },
     };
 
     const context = createContext(contextOptions);
-
-    // add inline externals
-    addInlineExternals(nitro.options);
-
-    // add virtual modules
-    Object.assign(
-      nitro.options.virtual,
-      await context.virtualModules(),
-      migrationsVirtualModule(await context.datasources(), moduleOptions.migrations),
-    );
 
     // auto-imports
     if (nitro.options.imports) {
@@ -106,37 +134,11 @@ const module: NitroModule = {
       // })
     }
 
-    // server assets
-    if (moduleOptions.migrations) {
-      await updateMigrationAssets(context, nitro.options, moduleOptions.migrations);
-
-      if (nitro.options.experimental.tasks) {
-        nitro.options.tasks ||= {};
-        nitro.options.tasks["drizzle:migrate"] = {
-          description: "Run drizzle migrations for a datasource.",
-          handler: "nitro-drizzle/migrations/task",
-        };
-      }
-    }
-
-    // watch options
     nitro.hooks.hook("rollup:before", async (nitro, config) => {
-      await addPlugin(config, reloadPlugin(nitro, contextOptions));
+      await addPlugin(config, reloadPlugin(nitro, { baseDir }));
     });
 
-    // extend types
-    nitro.hooks.hook("types:extend", async (types) => {
-      const runtimeTypeDeclarations = await context.runtimeTypeDeclarations();
-      const moduleTypeDeclarations = await context.moduleTypeDeclarations();
-
-      await addAugmentations(nitro.options, types, {
-        ...runtimeTypeDeclarations,
-        ...moduleTypeDeclarations,
-      });
-
-      const virtualTypeDeclarations = await context.virtualTypeDeclarations();
-      await addDeclarations(nitro.options, types, virtualTypeDeclarations);
-    });
+    await context.init();
   },
 };
 
