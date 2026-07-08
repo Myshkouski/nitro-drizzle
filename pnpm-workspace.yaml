@@ -15,17 +15,16 @@ allowBuilds:
 catalog:
   drizzle-kit: ^0.31.10
   drizzle-orm: ^0.45.2
-  h3: ^1
-  nitropack: ^2
+  h3: ^1.15.11
+  nitropack: ^2.13.4
   tsdown: ^0.22.0
-  typescript: ^6.0.3
 
 catalogs:
   drivers:
-    "@cloudflare/workers-types": ^4.20260624.1
+    "@cloudflare/workers-types": ^4.20260702.1
     "@electric-sql/pglite": ^0.5.4
     better-sqlite3: ^12.11.1
-    mysql2: ^3.22.5
+    mysql2: ^3.22.6
     postgres: ^3.4.9
   testcontainers:
     "@testcontainers/mysql": ^12.0.4
