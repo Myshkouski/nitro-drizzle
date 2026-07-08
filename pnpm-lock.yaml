@@ -9,31 +9,16 @@ catalogs:
     drizzle-kit:
       specifier: ^0.31.10
       version: 0.31.10
-    drizzle-orm:
-      specifier: ^0.45.2
-      version: 0.45.2
-    h3:
-      specifier: ^1.15.11
-      version: 1.15.11
     nitropack:
       specifier: ^2.13.4
       version: 2.13.4
   drivers:
-    '@cloudflare/workers-types':
-      specifier: ^4.20260702.1
-      version: 4.20260702.1
     '@electric-sql/pglite':
       specifier: ^0.5.4
       version: 0.5.4
     better-sqlite3:
       specifier: ^12.11.1
       version: 12.11.1
-    mysql2:
-      specifier: ^3.22.6
-      version: 3.22.6
-    postgres:
-      specifier: ^3.4.9
-      version: 3.4.9
   testcontainers:
     '@testcontainers/mysql':
       specifier: ^12.0.4
