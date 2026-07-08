@@ -1,3 +1,15 @@
+## v0.2.12
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.11...v0.2.12)
+
+### 🚀 Enhancements
+
+- **exports:** Introduce root entry point for the module ([767facb](https://github.com/Myshkouski/nitro-drizzle/commit/767facb))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.11
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.10...v0.2.11)
