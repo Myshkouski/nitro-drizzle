@@ -1,3 +1,15 @@
+## v0.2.13
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.12...v0.2.13)
+
+### 💅 Refactors
+
+- **config:** Add ModuleConfig type and defineModuleConfig helper ([754aa36](https://github.com/Myshkouski/nitro-drizzle/commit/754aa36))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.12
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.11...v0.2.12)
