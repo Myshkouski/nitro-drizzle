@@ -12,10 +12,11 @@ import {
 import type { VirtualModules, MaybePromise } from "nitro-drizzle/shared";
 import { pkgName } from "nitro-drizzle/meta";
 
+import { updateServerAssets } from "./utils/assets";
+import { addInlineExternals } from "./utils/externals";
+
 import { addAugmentations, addDeclarations } from "./internal/types";
 import { createResolver } from "./internal/resolver";
-import { updateServerAssets } from "./internal/assets";
-import { addInlineExternals } from "./internal/externals";
 import { reloadPlugin } from "./internal/reload";
 import { addPlugin } from "./internal/rollup";
 
@@ -143,3 +144,5 @@ const module: NitroModule = {
 };
 
 export default module;
+
+export { addInlineExternals, updateServerAssets };
