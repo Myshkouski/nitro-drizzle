@@ -38,21 +38,21 @@ export interface ModuleOptions {
   /**
    * Directory to search datasources
    */
-  baseDir: string;
+  baseDir?: string;
   /**
    * Patterns to search Drizzle configs
    */
-  configPattern: ConfigPattern;
+  configPattern?: ConfigPattern;
 
   datasources?: DatasourceOptions;
 
   /**
    * Enable migrations storage
    */
-  migrations: false | MigrationOptions;
+  migrations?: false | Partial<MigrationOptions>;
 }
 
-export function createDefaultOptions(): ModuleOptions {
+export function createDefaultOptions() {
   return {
     baseDir: "~/drizzle",
     configPattern: ["drizzle.config.{js,ts}", "drizzle-*.config.{js,ts}"],
@@ -60,7 +60,7 @@ export function createDefaultOptions(): ModuleOptions {
       storageBase: "drizzle:migrations",
       migrateOnInit: false,
     },
-  };
+  } as const satisfies ModuleOptions;
 }
 
 const module: NitroModule = {
