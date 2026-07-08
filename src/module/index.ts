@@ -30,7 +30,7 @@ export interface DatasourceOptions {
 
 declare module "nitropack/types" {
   interface NitroOptions {
-    drizzle: ModuleOptions;
+    drizzle?: ModuleOptions;
   }
 }
 
@@ -52,21 +52,30 @@ export interface ModuleOptions {
   migrations?: false | Partial<MigrationOptions>;
 }
 
+export type ModuleConfig = Required<ModuleOptions> & {
+  migrations: false | Required<MigrationOptions>;
+};
+
 export function createDefaultOptions() {
   return {
     baseDir: "~/drizzle",
     configPattern: ["drizzle.config.{js,ts}", "drizzle-*.config.{js,ts}"],
+    datasources: {},
     migrations: {
       storageBase: "drizzle:migrations",
       migrateOnInit: false,
     },
-  } as const satisfies ModuleOptions;
+  } as const satisfies ModuleConfig;
+}
+
+export function defineModuleConfig(options?: ModuleOptions): ModuleConfig {
+  return defu(options, createDefaultOptions());
 }
 
 const module: NitroModule = {
   name: pkgName,
   async setup(nitro) {
-    const moduleOptions = defu(nitro.options.drizzle, createDefaultOptions());
+    const moduleConfig = defineModuleConfig(nitro.options.drizzle);
 
     const resolver = createResolver(nitro.options.rootDir, {
       alias: nitro.options.alias,
@@ -74,7 +83,7 @@ const module: NitroModule = {
 
     const baseDir = resolve(
       nitro.options.srcDir,
-      resolveAlias(moduleOptions.baseDir, nitro.options.alias),
+      resolveAlias(moduleConfig.baseDir, nitro.options.alias),
     );
 
     const contextOptions: ContextOptions = {
@@ -82,9 +91,9 @@ const module: NitroModule = {
       resolver: resolver,
       baseDir,
       logger: nitro.logger,
-      configPattern: moduleOptions.configPattern,
-      datasource: { ...moduleOptions.datasources },
-      migrations: moduleOptions.migrations || void 0,
+      configPattern: moduleConfig.configPattern,
+      datasource: { ...moduleConfig.datasources },
+      migrations: moduleConfig.migrations || void 0,
 
       tasks: nitro.options.experimental.tasks
         ? (tasks) => {
