@@ -1,3 +1,15 @@
+## v0.2.15
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.14...v0.2.15)
+
+### 🤖 CI
+
+- Install with scripts and use dev:prepare in workflow ([047e260](https://github.com/Myshkouski/nitro-drizzle/commit/047e260))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.14
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.13...v0.2.14)
