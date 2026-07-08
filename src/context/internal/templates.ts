@@ -7,6 +7,7 @@ import {
 } from "knitwork";
 import type { DatasourceInfo } from "..";
 import type { VirtualModules } from "nitro-drizzle/shared";
+import { script } from "./format";
 
 export function runtimeDeclarations(datasources: readonly DatasourceInfo[]) {
   if (!datasources.length) {
@@ -78,7 +79,7 @@ export function dialectDeclarations(datasources: readonly DatasourceInfo[]) {
   return datasources
     .filter((d) => d.enabled)
     .map(({ name, dialect }) => {
-      return /*ts*/ `
+      return script /* ts */ `
         declare module "#nitro-drizzle/dialects/${name}" {
           ${genExport(`nitro-drizzle/dialects/${dialect}`, "*")}
         }
