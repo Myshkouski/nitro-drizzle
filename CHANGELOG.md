@@ -1,3 +1,23 @@
+## v0.2.14
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.13...v0.2.14)
+
+### 🩹 Fixes
+
+- **types:** Point generated declarations to nitro-drizzle/module ([c508fc9](https://github.com/Myshkouski/nitro-drizzle/commit/c508fc9))
+
+### 💅 Refactors
+
+- **templates:** Use script tagged template for indentation ([52b30cc](https://github.com/Myshkouski/nitro-drizzle/commit/52b30cc))
+
+### 🤖 CI
+
+- Update workflow to build workspace and run prepare scripts ([8afa87c](https://github.com/Myshkouski/nitro-drizzle/commit/8afa87c))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.13
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.12...v0.2.13)
