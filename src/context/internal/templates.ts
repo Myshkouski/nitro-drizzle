@@ -54,7 +54,7 @@ export function moduleTypeDeclarations(
 
   const names = datasources.map((d) => d.name);
 
-  const moduleId = "nitro-drizzle";
+  const moduleId = "nitro-drizzle/module";
 
   const content = [
     genReference({ types: moduleId }),
