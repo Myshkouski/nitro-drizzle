@@ -1,6 +1,6 @@
 {
   "name": "nitro-drizzle",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Nitro module to integrate Drizzle ORM with ease.",
   "homepage": "https://github.com/Myshkouski/nitro-drizzle#readme",
   "bugs": {

@@ -1,3 +1,15 @@
+## v0.2.11
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.10...v0.2.11)
+
+### 💅 Refactors
+
+- **types:** Relax module options and strengthen default typing ([4fc39db](https://github.com/Myshkouski/nitro-drizzle/commit/4fc39db))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.10
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.9...v0.2.10)
