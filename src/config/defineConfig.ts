@@ -4,7 +4,7 @@ import { cwd } from "node:process";
 import { fileURLToPath } from "node:url";
 
 /**
- * Define Drizzle config compatible with both 'nitro-drizzle/module' and 'drizzle-kit' packages.
+ * Define Drizzle config compatible with both 'nitro-drizzle' and 'drizzle-kit' packages.
  *
  * @param config
  * @param dirname

@@ -4,7 +4,7 @@ export default defineNitroConfig({
   debug: true,
   compatibilityDate: "latest",
   srcDir: "server",
-  modules: ["nitro-drizzle/module"],
+  modules: ["nitro-drizzle"],
   experimental: {
     tasks: true,
   },

@@ -37,14 +37,14 @@ npm install @cloudflare/workers-types
 
 ### 1. Configure Nitro Module
 
-Add `nitro-drizzle/module` to your `nitro.config.ts` modules:
+Add `nitro-drizzle` to your `nitro.config.ts` modules:
 
 ```ts
 // nitro.config.ts
 import { defineNitroConfig } from "nitropack/config";
 
 export default defineNitroConfig({
-  modules: ["nitro-drizzle/module"],
+  modules: ["nitro-drizzle"],
   drizzle: {
     datasources: {
       content: { connector: "sqlite" },
@@ -175,7 +175,7 @@ const result = await myDatasource.database.select().from(myDatasource.schema.myT
 
 ### `defineConfig(config: DrizzleConfig, filename: string)`
 
-- **Purpose**: Helper function to define Drizzle configuration files (`drizzle.config.ts`) that are compatible with both `nitro-drizzle/module` and `drizzle-kit`. It handles path resolution automatically.
+- **Purpose**: Helper function to define Drizzle configuration files (`drizzle.config.ts`) that are compatible with both `nitro-drizzle` and `drizzle-kit`. It handles path resolution automatically.
 - **Parameters**:
   - `config`: Your DrizzleKit configuration object.
   - `filename`: Pass `import.meta.url` as the `filename` for correct relative path resolution.

@@ -2,6 +2,7 @@ import { defineConfig } from "tsdown";
 
 export default defineConfig({
   entry: [
+    "./src/index",
     "./src/shared",
     "./src/module",
     "./src/config",

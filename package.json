@@ -17,6 +17,7 @@
   ],
   "type": "module",
   "exports": {
+    ".": "./dist/index.mjs",
     "./shared": "./dist/shared.mjs",
     "./migrations": "./dist/migrations.mjs",
     "./migrations/task": "./dist/migrations/task.mjs",
