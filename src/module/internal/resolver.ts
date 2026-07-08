@@ -18,10 +18,4 @@ class JitiResolver implements Resolver {
   resolve(id: string): string {
     return fileURLToPath(this.#jiti.esmResolve(id));
   }
-
-  tryResolve(id: string): string | undefined {
-    try {
-      return this.resolve(id);
-    } catch {}
-  }
 }

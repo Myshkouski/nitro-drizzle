@@ -285,10 +285,6 @@ export interface Resolver {
    * Resolves a module ID to its full path.
    */
   resolve(id: string): string;
-  /**
-   * Attempts to resolve a module ID, returns undefined if not found.
-   */
-  tryResolve(id: string): string | undefined;
 }
 
 export type ContextHook<TArgs extends readonly any[] = []> = (
