@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "nitro dev",
-    "prepare": "nitro prepare",
+    "dev:prepare": "nitro prepare",
     "migrate:users": "nitro task run drizzle:migrate --payload '{ \"name\": \"users\" }'",
     "migrate:content": "nitro task run drizzle:migrate --payload '{ \"name\": \"content\" }'"
   },

@@ -24,9 +24,9 @@ jobs:
         with:
           node-version: lts/*
           cache: pnpm
-      - run: pnpm install --ignore-scripts
+      - run: pnpm install
       - run: pnpm -w build
-      - run: pnpm -r prepare
+      - run: pnpm -r dev:prepare
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm fmt:check
