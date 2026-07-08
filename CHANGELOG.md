@@ -1,3 +1,19 @@
+## v0.2.10
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.9...v0.2.10)
+
+### 💅 Refactors
+
+- **resolver:** Remove unused tryResolve method ([06d261b](https://github.com/Myshkouski/nitro-drizzle/commit/06d261b))
+
+### 🏡 Chore
+
+- **module:** Reorganize utils and expose helper exports ([6beee97](https://github.com/Myshkouski/nitro-drizzle/commit/6beee97))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.9
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.8...v0.2.9)
