@@ -1,4 +1,3 @@
-import { createError } from "h3";
 import { useStorage } from "nitropack/runtime";
 import type { Storage } from "unstorage";
 import { digest } from "ohash";
@@ -34,13 +33,7 @@ export async function useMigrations<TName extends keyof DatasourceRegistry>(
   const storage = useMigrationsStorage(name);
   const journal = await storage.getItem<MigrationJournal>(JOURNAL_STORAGE_KEY);
   if (!journal) {
-    throw createError({
-      fatal: true,
-      message: `Cannot find migration journal for '${name}'`,
-      data: {
-        datasource: name,
-      },
-    });
+    throw new Error(`Cannot find migration journal for '${name}'`);
   }
 
   return generate(journal, storage);
@@ -54,13 +47,7 @@ async function* generate(journal: MigrationJournal, storage: Storage<string>) {
     const query = await storage.getItem<string>(filename);
 
     if (!query) {
-      throw createError({
-        fatal: true,
-        message: `Cannot find migration filename: ${filename}`,
-        data: {
-          filename,
-        },
-      });
+      throw new Error(`Cannot find migration filename: ${filename}`);
     }
 
     const migration: Migration = {
