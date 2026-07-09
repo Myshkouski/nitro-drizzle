@@ -21,7 +21,3 @@ export async function mapAsync<T, U>(
   }
   return items;
 }
-
-export async function runParallel<Tasks extends ReadonlyArray<() => any>>(...tasks: Tasks) {
-  return await Promise.all(tasks);
-}
