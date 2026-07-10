@@ -1,6 +1,6 @@
-import { defineNitroPlugin } from "nitropack/runtime";
+import { definePlugin } from "nitro";
 
-export default defineNitroPlugin((nitro) => {
+export default definePlugin((nitro) => {
   nitro.hooks.hook("drizzle:config", async (name, config) => {
     switch (name) {
       case "content":

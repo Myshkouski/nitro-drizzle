@@ -1,0 +1,9 @@
+{
+  "name": "nitro-drizzle-sample-data",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./content": "./content.ts",
+    "./users": "./users.ts"
+  }
+}

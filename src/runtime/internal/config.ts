@@ -1,7 +1,7 @@
 import { defu } from "defu";
-import { useNitroApp, useRuntimeConfig } from "nitropack/runtime";
-
 import type { Datasources, DatasourceConfig } from "..";
+
+import { callConfigHook, useRuntimeConfig } from "#nitro-drizzle/runtime";
 
 const datasourceConfig: Partial<DatasourceConfig> = {};
 
@@ -19,10 +19,8 @@ export async function getCachedDatasourceConfig<TName extends keyof Datasources 
     datasourceConfig[name] = undefined;
 
     const runtimeConfig = useRuntimeConfig();
-    // const config = structuredClone<DrizzleRuntimeConfig[TName]>(runtimeConfig.drizzle?.[name] ?? {})
-    const config = defu(runtimeConfig.drizzle?.[name], {});
-    const nitro = useNitroApp();
-    await nitro.hooks.callHook("drizzle:config", name, config);
+    const config = defu(runtimeConfig?.[name], {});
+    await callConfigHook(name, config);
 
     datasourceConfig[name] = config;
   }

@@ -1,5 +1,7 @@
 import { fileURLToPath, URL } from "node:url";
-import { name as pkgName } from "nitro-drizzle/package.json" with { type: "json" };
+import packageJson from "nitro-drizzle/package.json" with { type: "json" };
+
+const { name: pkgName } = packageJson;
 
 export { pkgName };
 

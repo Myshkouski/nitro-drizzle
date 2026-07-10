@@ -1,0 +1,21 @@
+{
+  "name": "@nitro-drizzle/fixtures-nitro-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nitropack dev",
+    "dev:prepare": "nitropack prepare",
+    "migrate:users": "nitropack task run drizzle:migrate --payload '{ \"name\": \"users\" }'",
+    "migrate:content": "nitropack task run drizzle:migrate --payload '{ \"name\": \"content\" }'"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "catalog:drivers",
+    "better-sqlite3": "catalog:drivers",
+    "nitro-drizzle": "workspace:^",
+    "nitro-drizzle-sample-data": "workspace:^",
+    "nitropack": "catalog:"
+  },
+  "devDependencies": {
+    "drizzle-kit": "catalog:"
+  }
+}

@@ -17,7 +17,9 @@ export default defineConfig({
     {
       "drivers/*": ["./src/drivers/*"],
       "dialects/*": ["./src/dialects/*"],
+      "middleware/*": ["./src/middleware/*"],
       "plugins/*": ["./src/plugins/*"],
+      "plugins/legacy/*": ["./src/plugins/legacy/*"],
     },
   ],
   deps: {

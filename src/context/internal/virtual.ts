@@ -9,6 +9,7 @@ import {
 } from "knitwork";
 import type { DatasourceInfo, MigrationOptions } from "..";
 import type { VirtualModules } from "nitro-drizzle/shared";
+import { script } from "./format";
 
 function genDatasourceModuleVariableName(dbModuleIndex: number) {
   return genSafeVariableName(`dbModule${dbModuleIndex}`);
@@ -34,8 +35,11 @@ function mergeSchemaModules(schemaIds: string[], dbModuleIndex: number) {
   `;
 }
 
-export function runtimeVirtualModule(datasources: readonly DatasourceInfo[]) {
-  const parts = datasources
+export function runtimeVirtualModule(
+  datasources: readonly DatasourceInfo[],
+  { legacyNitro, runtimeConfigProp }: { legacyNitro: boolean; runtimeConfigProp: string },
+) {
+  const datasourceRegistryParts = datasources
     .filter((datasource) => datasource.enabled)
     .map(({ name, imports: { schema, connector } }, datasourceIndex) => {
       const datasourceModuleVariableName = genDatasourceModuleVariableName(datasourceIndex);
@@ -90,16 +94,62 @@ export function runtimeVirtualModule(datasources: readonly DatasourceInfo[]) {
 
   const datasourceRegistryVarName = genSafeVariableName("datasourceRegistry");
 
-  return /* js */ `
-    ${parts.imports.join("\n")}
+  const nitroRuntimeParts = {
+    imports: [
+      legacyNitro
+        ? genImport("nitropack/runtime", ["useNitroApp"])
+        : genImport("nitro/app", ["useNitroHooks"]),
+      genImport(legacyNitro ? "nitropack/runtime" : "nitro/runtime-config", [
+        {
+          name: "useRuntimeConfig",
+          as: "useNitroRuntimeConfig",
+        },
+      ]),
+    ],
+    declarations: [
+      script /* js */ `
+        export function useRuntimeConfig() {
+          const runtimeConfig = useNitroRuntimeConfig();
+          return runtimeConfig[${genString(runtimeConfigProp)}]
+        }
+
+        ${
+          legacyNitro
+            ? script /* js */ `
+            function useNitroHooks() {
+              return useNitroApp().hooks;
+            }
+          `
+            : ""
+        }
+
+        export function onServerClose(cb) {
+          return useNitroHooks().hook("close", cb);
+        }
+
+        export function callConfigHook(name, config) {
+          return useNitroHooks().callHook("drizzle:config", name, config);
+        }
+      `,
+    ],
+    exports: [genExport(legacyNitro ? "nitropack/runtime" : "nitro/storage", ["useStorage"])],
+  };
+
+  return script /* js */ `
+    ${datasourceRegistryParts.imports.join("\n")}
+    ${nitroRuntimeParts.imports.join("\n")}
     
-    ${parts.schemaDefinitions.join("\n")}
+    ${datasourceRegistryParts.schemaDefinitions.join("\n")}
     
-    const ${datasourceRegistryVarName} = ${genObjectFromRawEntries(parts.entries)};
+    const ${datasourceRegistryVarName} = ${genObjectFromRawEntries(datasourceRegistryParts.entries)};
 
     export function useDatasourceRegistry() {
       return ${datasourceRegistryVarName};
     }
+
+    ${nitroRuntimeParts.declarations.join("\n")}
+
+    ${nitroRuntimeParts.exports.join("\n")}
   `;
 }
 
@@ -146,7 +196,7 @@ export function migrationsVirtualModule(
     );
   }
 
-  parts.push(/*js*/ `
+  parts.push(script /*js*/ `
     export const MIGRATIONS_STORAGE_BASE = ${genString(options.storageBase)};
     export const MIGRATE_ON_INIT = ${genArrayFromRaw(migrateOnInit.map((name) => genString(name)))};
   `);

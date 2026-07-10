@@ -1,6 +1,7 @@
+import { defineHandler } from "nitro";
 import { useDatasource } from "nitro-drizzle/runtime";
 
-export default defineEventHandler(async (event) => {
+export default defineHandler(async (event) => {
   await event.context.drizzle.waitReady();
 
   const { database, schema } = await useDatasource("content");

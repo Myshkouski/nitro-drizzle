@@ -81,12 +81,12 @@ class DefaultContext implements Context {
       });
     }
 
-    if (this.#options.inlineExternals) {
+    if (this.#options.externals) {
       const inlineModuleIds = ["runtime", "plugins", "migrations"].flatMap((id) => {
         return [join(pkgName, id), join(pkgDir, "dist", id)];
       });
 
-      await this.#options.inlineExternals(inlineModuleIds);
+      await this.#options.externals(inlineModuleIds);
     }
   }
 
@@ -96,7 +96,7 @@ class DefaultContext implements Context {
       baseDir,
       configPattern,
       resolver,
-      datasource: datasourceOptions,
+      datasources: datasourceOptions,
     } = this.#options;
 
     if (!this.#datasources) {
@@ -227,7 +227,11 @@ class DefaultContext implements Context {
 
     plugins.push("init");
 
-    const pluginIds = plugins.map((pluginName) => `nitro-drizzle/plugins/${pluginName}`);
+    let pluginIds: readonly string[] = plugins;
+    if (this.#options.legacy) {
+      pluginIds = pluginIds.map((pluginName) => `legacy/${pluginName}`);
+    }
+    pluginIds = pluginIds.map((pluginName) => `nitro-drizzle/plugins/${pluginName}`);
 
     return pluginIds;
   }
@@ -247,6 +251,9 @@ class DefaultContext implements Context {
         return { types: pluginId };
       }),
     ]);
+    if (!this.#options.legacy) {
+      references.add({ types: "nitro-drizzle/middleware/context" });
+    }
     const content = [
       ...[...references.values()].map((reference) => genReference(reference)),
       runtimeDeclarations(datasources),
@@ -261,7 +268,10 @@ class DefaultContext implements Context {
     datasources: readonly DatasourceInfo[],
   ): Promise<VirtualModules<`#nitro-drizzle/${string}`>> {
     return {
-      "#nitro-drizzle/runtime": runtimeVirtualModule(datasources),
+      "#nitro-drizzle/runtime": runtimeVirtualModule(datasources, {
+        legacyNitro: this.#options.legacy,
+        runtimeConfigProp: "drizzle",
+      }),
       ...dialectVirtualModules(datasources),
       ...migrationsVirtualModule(datasources, this.#options.migrations),
     };
@@ -300,6 +310,8 @@ export interface MigrationOptions {
 }
 
 export interface ContextOptions {
+  legacy: boolean;
+
   logger?: ConsolaInstance;
   /**
    * Current working directory
@@ -320,7 +332,7 @@ export interface ContextOptions {
   /**
    * Connector options
    */
-  datasource: Record<string, { connector: string }>;
+  datasources: Record<string, { connector: string }>;
 
   migrations: MigrationOptions | undefined;
 
@@ -352,7 +364,7 @@ export interface ContextOptions {
 
   assets: ContextHook<[assets: readonly ServerAssetDir[]]>;
 
-  inlineExternals?: ContextHook<[modules: readonly string[]]>;
+  externals?: ContextHook<[modules: readonly string[]]>;
 }
 
 /**

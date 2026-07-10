@@ -29,7 +29,9 @@
     "./drivers/*": "./dist/drivers/*.mjs",
     "./meta": "./dist/meta.mjs",
     "./module": "./dist/module.mjs",
+    "./middleware/*": "./dist/middleware/*.mjs",
     "./plugins/*": "./dist/plugins/*.mjs",
+    "./plugins/legacy/*": "./dist/plugins/legacy/*.mjs",
     "./runtime": "./dist/runtime.mjs",
     "./utils": "./dist/utils.mjs",
     "./package.json": "./package.json"
@@ -57,6 +59,7 @@
     "defu": "^6.1.7",
     "jiti": "^2.7.0",
     "knitwork": "^1.3.0",
+    "nitro": "catalog:",
     "nitropack": "catalog:",
     "ohash": "^2.0.11",
     "pathe": "^2.0.3",
@@ -93,7 +96,8 @@
     "drizzle-orm": "catalog:",
     "h3": "catalog:",
     "mysql2": "catalog:drivers",
-    "postgres": "catalog:drivers"
+    "postgres": "catalog:drivers",
+    "srvx": "^0.11.21"
   },
   "peerDependenciesMeta": {
     "@cloudflare/workers-types": {

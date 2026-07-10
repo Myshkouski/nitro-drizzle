@@ -1,6 +1,13 @@
-import type { NitroConfig, ServerAssetDir } from "nitropack/types";
+import type {
+  NitroConfig as LegacyNitroConfig,
+  ServerAssetDir as LegacyServerAssetDir,
+} from "nitropack/types";
+import type { NitroConfig, ServerAssetDir } from "nitro/types";
 
-export function updateServerAssets(config: NitroConfig, assets: readonly ServerAssetDir[]) {
+export function updateServerAssets(
+  config: NitroConfig | LegacyNitroConfig,
+  assets: readonly (ServerAssetDir | LegacyServerAssetDir)[],
+) {
   config.serverAssets ||= [];
   config.serverAssets = config.serverAssets
     .filter((_assets) => {

@@ -1,7 +1,8 @@
 import type { Datasources } from ".";
 import { createDatasource } from "./internal/createDatasource";
-import { useNitroApp } from "nitropack/runtime";
 import { clearCachedConfig } from "./internal/config";
+
+import { onServerClose } from "#nitro-drizzle/runtime";
 
 const datasources: {
   [K in keyof Datasources & string]?: Promise<Datasources[K]>;
@@ -33,14 +34,16 @@ export async function useDatasource<TName extends keyof Datasources & string>(
     datasourcePromise = datasources[name] = createDatasource(name) as Datasources[TName];
     const { autoClose = true } = options;
     if (autoClose) {
-      const nitro = useNitroApp();
-      nitro.hooks.hookOnce("close", async () => {
+      let removeCloseHandler: () => void;
+      removeCloseHandler = onServerClose(async () => {
         const datasource = await datasourcePromise;
 
         clearCachedConfig(name);
         cleanCachedDatasource(name);
 
         await datasource.close();
+
+        removeCloseHandler();
       });
     }
   }

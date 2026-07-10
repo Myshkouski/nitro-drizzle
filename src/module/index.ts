@@ -1,4 +1,5 @@
-import type { NitroModule } from "nitropack/types";
+import type { NitroModule as LegacyNitroModule } from "nitropack/types";
+import type { NitroModule } from "nitro/types";
 import { defu } from "defu";
 import { resolve } from "pathe";
 import { resolveAlias } from "pathe/utils";
@@ -13,12 +14,13 @@ import type { VirtualModules, MaybePromise } from "nitro-drizzle/shared";
 import { pkgName } from "nitro-drizzle/meta";
 
 import { updateServerAssets } from "./utils/assets";
-import { addInlineExternals } from "./utils/externals";
+import { addInlineExternals, addNoExternals } from "./utils/externals";
 
 import { addAugmentations, addDeclarations } from "./internal/types";
 import { createResolver } from "./internal/resolver";
 import { reloadPlugin } from "./internal/reload";
 import { addPlugin } from "./internal/rollup";
+import { isLegacy } from "./utils/nitro";
 
 /**
  * Datasource-specific configuration options.
@@ -29,6 +31,12 @@ export interface DatasourceOptions {
 }
 
 declare module "nitropack/types" {
+  interface NitroOptions {
+    drizzle?: ModuleOptions;
+  }
+}
+
+declare module "nitro/types" {
   interface NitroOptions {
     drizzle?: ModuleOptions;
   }
@@ -58,7 +66,7 @@ export type ModuleConfig = Required<ModuleOptions> & {
 
 export function createDefaultOptions() {
   return {
-    baseDir: "~/drizzle",
+    baseDir: "./drizzle",
     configPattern: ["drizzle.config.{js,ts}", "drizzle-*.config.{js,ts}"],
     datasources: {},
     migrations: {
@@ -72,7 +80,7 @@ export function defineModuleConfig(options?: ModuleOptions): ModuleConfig {
   return defu(options, createDefaultOptions());
 }
 
-const module: NitroModule = {
+const module: LegacyNitroModule & NitroModule = {
   name: pkgName,
   async setup(nitro) {
     const moduleConfig = defineModuleConfig(nitro.options.drizzle);
@@ -81,18 +89,31 @@ const module: NitroModule = {
       alias: nitro.options.alias,
     });
 
-    const baseDir = resolve(
-      nitro.options.srcDir,
-      resolveAlias(moduleConfig.baseDir, nitro.options.alias),
-    );
+    const serverDir = isLegacy(nitro) ? nitro.options.srcDir : nitro.options.serverDir;
+    if (!serverDir) {
+      nitro.logger.info("No server directory configured.");
+      return;
+    }
+
+    const baseDir = resolve(serverDir, resolveAlias(moduleConfig.baseDir, nitro.options.alias));
+
+    if (!isLegacy(nitro)) {
+      nitro.options.handlers ||= [];
+      nitro.options.handlers.push({
+        route: "/**",
+        handler: resolver.resolve("nitro-drizzle/middleware/context"),
+        middleware: true,
+      });
+    }
 
     const contextOptions: ContextOptions = {
+      legacy: isLegacy(nitro),
       cwd: process.cwd(),
       resolver: resolver,
       baseDir,
       logger: nitro.logger,
       configPattern: moduleConfig.configPattern,
-      datasource: { ...moduleConfig.datasources },
+      datasources: { ...moduleConfig.datasources },
       migrations: moduleConfig.migrations || void 0,
 
       tasks: nitro.options.experimental.tasks
@@ -103,7 +124,9 @@ const module: NitroModule = {
         : void 0,
 
       plugins(plugins) {
-        nitro.options.plugins.push(...plugins);
+        nitro.options.plugins.push(
+          ...plugins.map((plugin) => resolver.resolve(plugin).replace(/\.mjs$/, "")),
+        );
       },
 
       virtualModules(modules: VirtualModules): MaybePromise<void> {
@@ -112,12 +135,12 @@ const module: NitroModule = {
 
       declarations(declarations): MaybePromise<void> {
         nitro.hooks.hook("types:extend", async (types) => {
-          await addAugmentations(nitro.options, types, {
+          await addAugmentations(nitro, types, {
             ...declarations.runtime,
             ...declarations.module,
           });
 
-          await addDeclarations(nitro.options, types, declarations.virtual);
+          await addDeclarations(nitro, types, declarations.virtual);
         });
       },
 
@@ -125,8 +148,12 @@ const module: NitroModule = {
         updateServerAssets(nitro.options, assets);
       },
 
-      inlineExternals(modules: readonly string[]) {
-        addInlineExternals(nitro.options, modules);
+      externals(modules) {
+        if (isLegacy(nitro)) {
+          addInlineExternals(nitro.options, modules);
+        } else {
+          addNoExternals(nitro.options, modules);
+        }
       },
     };
 
@@ -154,4 +181,4 @@ const module: NitroModule = {
 
 export default module;
 
-export { addInlineExternals, updateServerAssets };
+export { addInlineExternals, updateServerAssets, isLegacy as isLegacyNitro };

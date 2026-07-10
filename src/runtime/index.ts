@@ -105,15 +105,25 @@ declare module "nitropack/types" {
   }
 }
 
-type ConfigHookArgs = {
+declare module "nitro/types" {
+  interface NitroRuntimeConfig {
+    drizzle?: RuntimeConfig;
+  }
+}
+
+export type ConfigHookArgs = {
   [K in keyof DatasourceConfig]: [name: K, config: DatasourceConfig[K]];
 }[keyof DatasourceConfig];
 
-interface ConfigHooks {
+export interface ConfigHooks {
   "drizzle:config": (...args: ConfigHookArgs) => void | Promise<void>;
 }
 
 declare module "nitropack/types" {
+  interface NitroRuntimeHooks extends ConfigHooks {}
+}
+
+declare module "nitro/types" {
   interface NitroRuntimeHooks extends ConfigHooks {}
 }
 

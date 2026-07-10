@@ -22,5 +22,5 @@
       "#nitro-drizzle/migrations": ["./src/migrations/virtual.d.ts"]
     }
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*", "./tests/**/*"]
 }

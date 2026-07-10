@@ -6,4 +6,3 @@ dist
 .output
 .env
 .env.local
-.data

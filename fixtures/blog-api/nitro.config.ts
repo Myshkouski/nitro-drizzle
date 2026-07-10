@@ -1,21 +1,17 @@
-import { defineNitroConfig } from "nitropack/config";
+import { defineConfig } from "nitro";
 
-export default defineNitroConfig({
+export default defineConfig({
   debug: true,
-  compatibilityDate: "latest",
-  srcDir: "server",
+  serverDir: "./server",
+  renderer: false,
   modules: ["nitro-drizzle"],
-  experimental: {
-    tasks: true,
-  },
   runtimeConfig: {
     drizzle: {
       content: {
-        url: "./.data/content/sqlite/data.db",
+        url: ":memory:",
       },
       users: {
-        dataDir: "./.data/users/pglite",
-        database: "postgres",
+        dataDir: "memory://",
       },
       // @ts-expect-error
       unknown: {},
@@ -37,10 +33,7 @@ export default defineNitroConfig({
     unknownModuleOptions: {},
   },
   typescript: {
-    tsConfig: {
-      compilerOptions: {
-        verbatimModuleSyntax: true,
-      },
-    },
+    generateRuntimeConfigTypes: true,
+    generateTsConfig: true,
   },
 });

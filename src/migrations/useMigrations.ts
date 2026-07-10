@@ -1,8 +1,8 @@
-import { useStorage } from "nitropack/runtime";
 import type { Storage } from "unstorage";
 import { digest } from "ohash";
 import type { DatasourceRegistry } from "nitro-drizzle/runtime";
 import { MIGRATIONS_STORAGE_BASE } from "#nitro-drizzle/migrations";
+import { useStorage } from "#nitro-drizzle/runtime";
 import type { Migration } from "./internal/migrate";
 
 /**
@@ -14,7 +14,7 @@ import type { Migration } from "./internal/migrate";
 export function useMigrationsStorage<TName extends keyof DatasourceRegistry>(
   name: TName,
 ): Storage<string> {
-  return useStorage<string>(`assets:${MIGRATIONS_STORAGE_BASE}:${name}`);
+  return useStorage(`assets:${MIGRATIONS_STORAGE_BASE}:${name}`);
 }
 
 /** Storage key for the migration journal. */
