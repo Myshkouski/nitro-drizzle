@@ -2,11 +2,11 @@ import type { RequestListener } from "http";
 import { listen, type Listener } from "listhen";
 import { afterAll, beforeAll, expect, it } from "vitest";
 
-export function setupNitroTest(requestListener: RequestListener) {
+export function setupNitroTest(requestListener: () => Promise<RequestListener>) {
   let listener: Listener;
 
   beforeAll(async () => {
-    listener = await listen(requestListener);
+    listener = await listen(await requestListener());
   });
 
   afterAll(async () => {

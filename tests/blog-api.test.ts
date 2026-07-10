@@ -4,11 +4,9 @@ import { setupNitroTest } from "./setup";
 import { buildNitro } from "./nitro";
 
 describe("legacy nitro", async () => {
-  const listener = await buildLegacyNitro("fixtures/blog-api-legacy");
-  setupNitroTest(listener);
+  setupNitroTest(() => buildLegacyNitro("fixtures/blog-api-legacy"));
 });
 
 describe("nitro", { skip: true }, async () => {
-  const listener = await buildNitro("fixtures/blog-api");
-  setupNitroTest(listener);
+  setupNitroTest(() => buildNitro("fixtures/blog-api"));
 });
