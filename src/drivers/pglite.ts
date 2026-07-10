@@ -10,8 +10,7 @@ import { defineDriver, type Schema } from ".";
  * @returns A Datasource instance
  */
 export default defineDriver(<TSchema extends Schema>(options: PGliteOptions, schema: TSchema) => {
-  const { dataDir, ...other } = options;
-  const connector = new PGlite(dataDir, other);
+  const connector = new PGlite(options);
   const database = drizzle(connector, { schema });
   return {
     database,
@@ -24,13 +23,3 @@ export default defineDriver(<TSchema extends Schema>(options: PGliteOptions, sch
     },
   };
 });
-
-/**
- * Configuration options for the PGlite driver.
- */
-export type Config = {
-  /** Directory path for storing database data. */
-  dataDir?: string;
-  /** Additional PGlite options. */
-  options?: PGliteOptions;
-};
