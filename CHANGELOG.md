@@ -1,3 +1,15 @@
+## v0.3.0-beta.1
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.3.0-beta.0...v0.3.0-beta.1)
+
+### 🩹 Fixes
+
+- **tests:** Suppress type errors on untyped JSON response assertions ([cc924de](https://github.com/Myshkouski/nitro-drizzle/commit/cc924de))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.3.0-beta.0
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.15...v0.3.0-beta.0)
