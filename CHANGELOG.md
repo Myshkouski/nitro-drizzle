@@ -1,3 +1,19 @@
+## v0.3.0-beta.2
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.3.0-beta.1...v0.3.0-beta.2)
+
+### 🩹 Fixes
+
+- **pglite:** Pass options object directly to PGlite connector ([93440b0](https://github.com/Myshkouski/nitro-drizzle/commit/93440b0))
+
+### 💅 Refactors
+
+- **tests:** Defer nitro listener build to beforeAll via factory ([cfe4bfe](https://github.com/Myshkouski/nitro-drizzle/commit/cfe4bfe))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.3.0-beta.1
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.3.0-beta.0...v0.3.0-beta.1)
