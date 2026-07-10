@@ -1,3 +1,23 @@
+## v0.3.0-beta.0
+
+[compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.15...v0.3.0-beta.0)
+
+### 🚀 Enhancements
+
+- **nitro:** Add support for Nitro v3 alongside legacy Nitro v2 ([793e111](https://github.com/Myshkouski/nitro-drizzle/commit/793e111))
+
+### 💅 Refactors
+
+- **migrations:** Replace h3 createError with native Error ([deb4530](https://github.com/Myshkouski/nitro-drizzle/commit/deb4530))
+
+### 🏡 Chore
+
+- **internal:** Remove unused helpers ([bde2a3a](https://github.com/Myshkouski/nitro-drizzle/commit/bde2a3a))
+
+### ❤️ Contributors
+
+- Alexei Myshkouski ([@Myshkouski](https://github.com/Myshkouski))
+
 ## v0.2.15
 
 [compare changes](https://github.com/Myshkouski/nitro-drizzle/compare/v0.2.14...v0.2.15)
