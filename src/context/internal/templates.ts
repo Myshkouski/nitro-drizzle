@@ -78,10 +78,10 @@ export function moduleTypeDeclarations(
 export function dialectDeclarations(datasources: readonly DatasourceInfo[]) {
   return datasources
     .filter((d) => d.enabled)
-    .map(({ name, dialect }) => {
+    .map(({ name, imports }) => {
       return script /* ts */ `
         declare module "#nitro-drizzle/dialects/${name}" {
-          ${genExport(`nitro-drizzle/dialects/${dialect}`, "*")}
+          ${genExport(imports.helpers, "*")}
         }
       `;
     })

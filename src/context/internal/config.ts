@@ -23,7 +23,7 @@ export async function transformDrizzleConfig(
       // connector: resolver.tryResolve(resolve(cwd, './driver')) || resolver.resolve(join(connectorsDir, driver || dialect)),
       // connector: resolver.resolve(`nitro-drizzle/drivers/${driver || dialect}`),
       connector: `nitro-drizzle/drivers/${driver || dialect}`,
-      helpers: `nitro-drizzle/dialects/${driver || dialect}`,
+      helpers: `nitro-drizzle/dialects/${dialect}`,
     },
     migrations: {
       assets: drizzleConfig.out ? resolve(cwd, drizzleConfig.out) : undefined,
