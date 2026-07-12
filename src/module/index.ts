@@ -115,6 +115,23 @@ const module: LegacyNitroModule & NitroModule = {
       configPattern: moduleConfig.configPattern,
       datasources: { ...moduleConfig.datasources },
       migrations: moduleConfig.migrations || void 0,
+      get initHooks() {
+        const hooks: NitroHookName[] = [];
+        if (nitro.options.preset.startsWith("cloudflare")) {
+          if (nitro.options.preset.endsWith("durable")) {
+            hooks.push("cloudflare:durable:init", "cloudflare:durable:alarm");
+          }
+          hooks.push(
+            "request",
+            "cloudflare:email",
+            "cloudflare:queue",
+            "cloudflare:scheduled",
+            "cloudflare:tail",
+            "cloudflare:trace",
+          );
+        }
+        return hooks;
+      },
 
       tasks: nitro.options.experimental.tasks
         ? (tasks) => {

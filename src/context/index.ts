@@ -20,8 +20,7 @@ import {
   runtimeVirtualModule,
 } from "./internal/virtual";
 
-import type { MaybePromise, VirtualModules } from "nitro-drizzle/shared";
-import type { ServerAssetDir } from "nitropack/types";
+import type { MaybePromise, NitroHookName, VirtualModules } from "nitro-drizzle/shared";
 import { join } from "pathe";
 
 /**
@@ -271,6 +270,7 @@ class DefaultContext implements Context {
       "#nitro-drizzle/runtime": runtimeVirtualModule(datasources, {
         legacyNitro: this.#options.legacy,
         runtimeConfigProp: "drizzle",
+        initHooks: this.#options.initHooks,
       }),
       ...dialectVirtualModules(datasources),
       ...migrationsVirtualModule(datasources, this.#options.migrations),
@@ -335,6 +335,11 @@ export interface ContextOptions {
   datasources: Record<string, { connector: string }>;
 
   migrations: MigrationOptions | undefined;
+
+  /**
+   * Hooks that allowed to call "drizzle:init" hook.
+   */
+  initHooks?: readonly NitroHookName[];
 
   tasks?: ContextHook<
     [
