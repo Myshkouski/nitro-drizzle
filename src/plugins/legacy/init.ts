@@ -1,4 +1,5 @@
 import { defineNitroPlugin } from "nitropack/runtime";
+import { initHooks } from "#nitro-drizzle/runtime";
 
 /**
  * Nitro plugin that triggers the 'drizzle:init' hook during server initialization.
@@ -12,27 +13,52 @@ export default defineNitroPlugin(async (nitro) => {
     await initHook;
   };
 
+  // TODO: should be replaced with middleware
   nitro.hooks.hook("request", (event) => {
     event.context.drizzle = {
-      readyState,
+      get readyState() {
+        return readyState;
+      },
       waitReady,
     };
   });
 
-  initHook = new Promise((resolve, reject) => {
-    nitro.hooks
-      .callHook("drizzle:init")
-      .then(() => {
-        readyState = "done";
-        resolve(readyState);
-      })
-      .catch((err) => {
-        readyState = "error";
-        reject(err);
-      });
-  });
+  const cleanup: (() => void)[] = [];
 
-  await initHook;
+  async function callInitHook() {
+    if (!initHook) {
+      initHook = new Promise((resolve, reject) => {
+        nitro.hooks
+          .callHook("drizzle:init")
+          .then(() => {
+            readyState = "done";
+            resolve(readyState);
+          })
+          .catch((err) => {
+            readyState = "error";
+            reject(err);
+          });
+      });
+
+      for (const fn of cleanup) {
+        fn();
+      }
+    }
+
+    await initHook;
+  }
+
+  if (initHooks?.length) {
+    const cleanups = initHooks.map((hookName) => {
+      return nitro.hooks.hook(hookName, async () => {
+        await callInitHook();
+      });
+    });
+
+    cleanup.push(...cleanups);
+  } else {
+    await callInitHook();
+  }
 });
 
 export type ReadyState = "pending" | "done" | "error";
