@@ -21,6 +21,8 @@ import {
 } from "./internal/virtual";
 
 import type { MaybePromise, NitroHookName, VirtualModules } from "nitro-drizzle/shared";
+import type { ServerAssetDir as LegacyServerAssetDir } from "nitropack/types";
+import type { ServerAssetDir } from "nitro/types";
 import { join } from "pathe";
 
 /**
@@ -114,18 +116,27 @@ class DefaultContext implements Context {
           });
           const [_, dirName] = path.match(/(.+\/(.+))\/.+$/)!.slice(1, 3) as [string, string];
 
-          return await transformDrizzleConfig(config, {
+          const datasource = await transformDrizzleConfig(config, {
             cwd: this.#options.cwd,
             path,
             dirName,
             resolver,
           });
+
+          return {
+            ...datasource,
+            driver: datasourceOptions[datasource.name].connector,
+            imports: {
+              ...datasource.imports,
+              connector: `nitro-drizzle/drivers/${datasourceOptions[datasource.name].connector}`,
+            },
+          };
         },
       );
 
       datasources = Object.entries(datasourceOptions).reduce((_datasources, [name, options]) => {
         const datasource = datasources.find(
-          (d) => d.name == name && options.connector == (d.driver ? d.driver : d.dialect),
+          (d) => d.name == name && driverToDialect(options.connector) == d.dialect,
         );
         if (!datasource) {
           return _datasources;
@@ -176,28 +187,31 @@ class DefaultContext implements Context {
 
   private async migrationAssets(
     datasources: readonly DatasourceInfo[],
-  ): Promise<readonly ServerAssetDir[]> {
+  ): Promise<readonly (ServerAssetDir | LegacyServerAssetDir)[]> {
     const migrationOptions = this.#options.migrations;
 
     if (!migrationOptions) {
       return [];
     }
 
-    return datasources.reduce((acc, { name, migrations }) => {
-      const dir = migrations.assets;
-      if (dir) {
-        acc.push({
-          baseName: `${migrationOptions.storageBase}:${name}`,
-          dir,
-          /**
-           * @todo Doesn't work in dev mode - 'fs' driver does not support 'pattern'
-           * Disabled - include all files to use with meta/_journal.json
-           */
-          // pattern: '*.sql',
-        });
-      }
-      return acc;
-    }, [] as ServerAssetDir[]);
+    return datasources.reduce(
+      (acc, { name, migrations }) => {
+        const dir = migrations.assets;
+        if (dir) {
+          acc.push({
+            baseName: `${migrationOptions.storageBase}:${name}`,
+            dir,
+            /**
+             * @todo Doesn't work in dev mode - 'fs' driver does not support 'pattern'
+             * Disabled - include all files to use with meta/_journal.json
+             */
+            // pattern: '*.sql',
+          });
+        }
+        return acc;
+      },
+      [] as (ServerAssetDir | LegacyServerAssetDir)[],
+    );
   }
 
   private async virtualTypeDeclarations(
@@ -280,6 +294,17 @@ class DefaultContext implements Context {
   reload() {
     this.#datasources = null;
   }
+}
+
+function driverToDialect(driver: string) {
+  let dialect = driver;
+  if (driver.startsWith("d1")) {
+    dialect = "sqlite";
+  }
+  if (driver == "pglite") {
+    dialect = "postgresql";
+  }
+  return dialect;
 }
 
 /**
@@ -367,7 +392,7 @@ export interface ContextOptions {
 
   virtualModules: ContextHook<[modules: VirtualModules]>;
 
-  assets: ContextHook<[assets: readonly ServerAssetDir[]]>;
+  assets: ContextHook<[assets: readonly (ServerAssetDir | LegacyServerAssetDir)[]]>;
 
   externals?: ContextHook<[modules: readonly string[]]>;
 }
