@@ -10,15 +10,13 @@ import {
 } from "nitropack";
 import { pkgDir } from "nitro-drizzle/meta";
 
-export async function buildLegacyNitro(
-  dir: string,
-  config: Omit<NitroConfig, "rootDir" | "preset"> = {},
-) {
+export async function buildLegacyNitro(dir: string, config?: Omit<NitroConfig, "rootDir">) {
   const rootDir = resolve(pkgDir, dir);
+  const preset = config?.preset ?? "node-listener";
   const nitro = await createNitro({
     rootDir,
-    preset: "node-listener",
     ...config,
+    preset,
   });
 
   await prepare(nitro);
