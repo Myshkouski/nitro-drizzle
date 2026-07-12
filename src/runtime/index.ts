@@ -17,11 +17,10 @@ export interface DatasourceProvider<TConfig, TDatasource extends Datasource<any,
 export type ToDatasourceProvider<
   TSchema extends Schema,
   TFactory extends DatasourceDriver<any>,
-> = TFactory extends ((
-  config: infer TConfig,
-  schema: TSchema,
-) => infer TDatasource extends Datasource<any, any>)
-  ? DatasourceProvider<TConfig, TDatasource>
+> = TFactory extends (config: infer TConfig, schema: TSchema) => infer TReturn
+  ? Awaited<TReturn> extends Datasource<any, any>
+    ? DatasourceProvider<TConfig, Awaited<TReturn>>
+    : never
   : never;
 
 /**
