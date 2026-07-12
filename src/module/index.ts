@@ -10,7 +10,7 @@ import {
   type ContextOptions,
   type MigrationOptions,
 } from "nitro-drizzle/context";
-import type { VirtualModules, MaybePromise } from "nitro-drizzle/shared";
+import type { VirtualModules, MaybePromise, NitroHookName } from "nitro-drizzle/shared";
 import { pkgName } from "nitro-drizzle/meta";
 
 import { updateServerAssets } from "./utils/assets";
