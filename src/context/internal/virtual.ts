@@ -35,9 +35,15 @@ function mergeSchemaModules(schemaIds: string[], dbModuleIndex: number) {
   `;
 }
 
+export type RuntimeVirtualModuleOptions = {
+  legacyNitro: boolean;
+  runtimeConfigProp: string;
+  initHooks?: readonly string[];
+};
+
 export function runtimeVirtualModule(
   datasources: readonly DatasourceInfo[],
-  { legacyNitro, runtimeConfigProp }: { legacyNitro: boolean; runtimeConfigProp: string },
+  { legacyNitro, runtimeConfigProp, initHooks }: RuntimeVirtualModuleOptions,
 ) {
   const datasourceRegistryParts = datasources
     .filter((datasource) => datasource.enabled)
@@ -150,6 +156,8 @@ export function runtimeVirtualModule(
     ${nitroRuntimeParts.declarations.join("\n")}
 
     ${nitroRuntimeParts.exports.join("\n")}
+
+    export const initHooks = ${JSON.stringify(initHooks || [])};
   `;
 }
 
