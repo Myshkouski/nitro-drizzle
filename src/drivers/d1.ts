@@ -8,7 +8,7 @@ import {
   createTableRelationsHelpers,
 } from "drizzle-orm";
 import { DrizzleD1Database, SQLiteD1Session, type AnyD1Database } from "drizzle-orm/d1";
-import { SQLiteD1Dialect } from "./internal/d1-dialect";
+import { SQLiteD1Dialect } from "./d1/dialect";
 import { SELECT_1 } from "./internal/sql";
 
 /**

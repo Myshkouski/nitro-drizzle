@@ -14,7 +14,7 @@ import {
   extractTablesRelationalConfig,
   createTableRelationsHelpers,
 } from "drizzle-orm";
-import { SQLiteD1Dialect } from "./internal/d1-dialect";
+import { SQLiteD1Dialect } from "./d1/dialect";
 import { SELECT_1 } from "./internal/sql";
 
 /**
