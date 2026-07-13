@@ -35,6 +35,30 @@ export default defineNitroConfig({
     // @ts-expect-error
     unknownModuleOptions: {},
   },
+  cloudflare: {
+    deployConfig: true,
+    nodeCompat: true,
+    wrangler: {
+      // durable_objects: {
+      //   bindings: [
+      //     {
+      //       name: "server",
+      //       class_name: "$DurableObject",
+      //     },
+      //   ],
+      // },
+      d1_databases: [
+        {
+          database_name: "content",
+          binding: "content",
+        },
+        {
+          database_name: "users",
+          binding: "users",
+        },
+      ],
+    },
+  },
   typescript: {
     tsConfig: {
       compilerOptions: {
