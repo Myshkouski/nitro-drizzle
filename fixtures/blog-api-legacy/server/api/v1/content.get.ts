@@ -5,7 +5,14 @@ export default defineEventHandler(async (event) => {
 
   const { database, schema } = await useDatasource("content");
   const [posts, comments] = await Promise.all([
-    database.select().from(schema.posts).limit(10),
+    database.query.posts
+      .findMany({
+        limit: 10,
+        with: {
+          comments: true,
+        },
+      })
+      .execute(),
     database.select().from(schema.comments).limit(10),
   ]);
 
