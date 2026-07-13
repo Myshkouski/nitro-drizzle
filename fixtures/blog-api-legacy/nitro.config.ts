@@ -21,6 +21,7 @@ export default defineNitroConfig({
     },
   },
   drizzle: {
+    baseDir: "~/db/drizzle",
     migrations: {
       migrateOnInit: true,
     },
