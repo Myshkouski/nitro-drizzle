@@ -8,6 +8,13 @@
       "when": 1770365087233,
       "tag": "0000_cool_gauntlet",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1783928455222,
+      "tag": "0001_rapid_infant_terrible",
+      "breakpoints": true
     }
   ]
 }

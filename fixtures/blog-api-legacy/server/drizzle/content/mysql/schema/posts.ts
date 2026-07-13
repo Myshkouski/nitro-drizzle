@@ -1,5 +1,7 @@
 import { mysqlTable, serial, text, timestamp, json } from "drizzle-orm/mysql-core";
+import { relations } from "drizzle-orm/relations";
 import { sql } from "drizzle-orm/sql";
+import { comments } from "./comments";
 
 export const posts = mysqlTable("posts", {
   id: serial("id").primaryKey(),
@@ -12,3 +14,7 @@ export const posts = mysqlTable("posts", {
     .notNull()
     .default(sql`('[]')`),
 });
+
+export const postsRelations = relations(posts, ({ many }) => ({
+  comments: many(comments),
+}));

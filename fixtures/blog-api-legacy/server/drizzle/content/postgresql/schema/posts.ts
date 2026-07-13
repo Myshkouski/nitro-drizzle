@@ -1,4 +1,6 @@
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm/relations";
+import { comments } from "./comments";
 
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
@@ -8,3 +10,7 @@ export const posts = pgTable("posts", {
   date: timestamp("date", { withTimezone: true }).notNull().defaultNow(),
   authors: integer("authors").array(),
 });
+
+export const postsRelations = relations(posts, ({ many }) => ({
+  comments: many(comments),
+}));
