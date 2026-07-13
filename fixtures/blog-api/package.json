@@ -7,6 +7,7 @@
   "scripts": {
     "build": "nitro build",
     "dev": "nitro dev",
+    "dev:prepare": "nitro prepare",
     "preview": "nitro preview"
   },
   "devDependencies": {
