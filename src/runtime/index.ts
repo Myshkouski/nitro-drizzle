@@ -127,3 +127,4 @@ declare module "nitro/types" {
 }
 
 export * from "./useDatasource";
+export * from "./useDialect";
