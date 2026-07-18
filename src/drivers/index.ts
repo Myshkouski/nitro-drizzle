@@ -1,3 +1,5 @@
+import type { MaybePromise } from "nitro-drizzle/shared";
+
 /**
  * Schema type representing database tables.
  */
@@ -7,10 +9,10 @@ export type Schema = Record<string, any>;
  * Factory function type for creating Drizzle datasource instances.
  * @template TDatabase - The database type
  */
-export type DatasourceDriver<TDatabase> = <TSchema extends Schema>(
+export type DatasourceDriver<TDialect extends string, TDatabase> = <TSchema extends Schema>(
   config: any,
   schema: TSchema,
-) => Datasource<TDatabase, TSchema> | Promise<Datasource<TDatabase, TSchema>>;
+) => MaybePromise<Datasource<TDialect, TDatabase, TSchema>>;
 
 /**
  * Defines a driver factory function.
@@ -18,7 +20,10 @@ export type DatasourceDriver<TDatabase> = <TSchema extends Schema>(
  * @param create - The driver factory function
  * @returns The same driver factory function
  */
-export function defineDriver<TFactory extends DatasourceDriver<any>>(create: TFactory): TFactory {
+export function defineDriver<
+  TDialect extends string,
+  TFactory extends DatasourceDriver<TDialect, any>,
+>(create: TFactory): TFactory {
   return create;
 }
 
@@ -27,13 +32,14 @@ export function defineDriver<TFactory extends DatasourceDriver<any>>(create: TFa
  * @template TDatabase - The database client type
  * @template TSchema - The schema type
  */
-export interface Datasource<TDatabase, TSchema extends Schema> {
+export interface Datasource<TDialect extends string, TDatabase, TSchema extends Schema> {
+  dialect: TDialect;
   /** The database client instance. */
   database: TDatabase;
   /** The schema definition. */
   schema: TSchema;
   /** Waits for the database connection to be ready. */
-  waitReady: () => Promise<void>;
+  waitReady: () => MaybePromise<void>;
   /** Closes the database connection. */
-  close: () => Promise<void>;
+  close: () => MaybePromise<void>;
 }

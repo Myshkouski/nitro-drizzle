@@ -25,6 +25,7 @@ export default defineDriver(async <TSchema extends Schema>(options: D1Options, s
   const client = await connector.getInstance();
   const database = drizzle(client, { schema });
   return {
+    dialect: "sqlite",
     database,
     schema,
     async waitReady() {

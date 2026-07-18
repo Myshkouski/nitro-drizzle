@@ -14,6 +14,7 @@ export default defineDriver(async <TSchema extends Schema>(config: Options, sche
   const connection = await createConnection(config.url);
   const database = drizzle(connection, { schema, mode: "default" });
   return {
+    dialect: "mysql",
     database,
     schema,
     waitReady: async () => {

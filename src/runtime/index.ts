@@ -5,7 +5,7 @@ import type { Datasource, DatasourceDriver, Schema } from "nitro-drizzle/drivers
  * @template TConfig - The configuration type for the datasource
  * @template TDatasource - The datasource type that extends Datasource
  */
-export interface DatasourceProvider<TConfig, TDatasource extends Datasource<any, any>> {
+export interface DatasourceProvider<TConfig, TDatasource extends Datasource<any, any, any>> {
   create(config: TConfig): Promise<TDatasource> | TDatasource;
 }
 
@@ -16,9 +16,9 @@ export interface DatasourceProvider<TConfig, TDatasource extends Datasource<any,
  */
 export type ToDatasourceProvider<
   TSchema extends Schema,
-  TFactory extends DatasourceDriver<any>,
+  TFactory extends DatasourceDriver<any, any>,
 > = TFactory extends (config: infer TConfig, schema: TSchema) => infer TReturn
-  ? Awaited<TReturn> extends Datasource<any, any>
+  ? Awaited<TReturn> extends Datasource<any, any, any>
     ? DatasourceProvider<TConfig, Awaited<TReturn>>
     : never
   : never;

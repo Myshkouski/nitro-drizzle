@@ -28,6 +28,7 @@ const driver = defineDriver(<TSchema extends Schema>(options: D1HttpOptions, sch
   const { callback, batchCallback } = d1HttpDriver(options);
   const database = drizzle(callback, batchCallback, { schema });
   return {
+    dialect: "sqlite",
     database,
     schema,
     async waitReady() {

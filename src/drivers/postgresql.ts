@@ -16,6 +16,7 @@ export default defineDriver(
     const client = url ? createPostgres(url, other) : createPostgres(other);
     const database = drizzle(client, { schema });
     return {
+      dialect: "postgresql",
       database,
       schema,
       async waitReady() {

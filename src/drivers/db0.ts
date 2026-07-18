@@ -12,6 +12,7 @@ export default defineDriver(<TSchema extends Schema>(options: Options, schema: T
   const db0 = useDatabase(options.name);
   const database = drizzle<TSchema>(db0);
   return {
+    dialect: "sqlite",
     database,
     schema,
     close: async () => {

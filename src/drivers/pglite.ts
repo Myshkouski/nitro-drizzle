@@ -13,6 +13,7 @@ export default defineDriver(<TSchema extends Schema>(options: PGliteOptions, sch
   const connector = new PGlite(options);
   const database = drizzle(connector, { schema });
   return {
+    dialect: "postgresql",
     database,
     schema,
     async waitReady() {
