@@ -65,7 +65,10 @@ describe("drivers", () => {
   });
 });
 
-async function testDatasource(datasource: Datasource<any, any>, fn: () => void | Promise<void>) {
+async function testDatasource(
+  datasource: Datasource<any, any, any>,
+  fn: () => void | Promise<void>,
+) {
   await datasource.waitReady();
   await fn();
   await datasource.close();
