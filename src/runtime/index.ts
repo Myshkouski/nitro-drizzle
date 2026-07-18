@@ -1,4 +1,5 @@
 import type { Datasource, DatasourceDriver, Schema } from "nitro-drizzle/drivers";
+import type { MaybePromise } from "nitro-drizzle/shared";
 
 /**
  * Provider interface for creating Drizzle datasource instances.
@@ -6,7 +7,7 @@ import type { Datasource, DatasourceDriver, Schema } from "nitro-drizzle/drivers
  * @template TDatasource - The datasource type that extends Datasource
  */
 export interface DatasourceProvider<TConfig, TDatasource extends Datasource<any, any, any>> {
-  create(config: TConfig): Promise<TDatasource> | TDatasource;
+  create(config: TConfig): MaybePromise<TDatasource>;
 }
 
 /**
