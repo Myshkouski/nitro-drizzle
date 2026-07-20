@@ -33,6 +33,9 @@ export function runtimeDeclarations(datasources: readonly DatasourceInfo[]) {
 }
 
 function genSchemaType(imports: string[]) {
+  if (!imports.length) {
+    return "{}";
+  }
   return imports.map((id) => `typeof import('${id}')`).join(" & ");
 }
 
